@@ -499,5 +499,8 @@ app/
 This project is for educational purposes.
 
 ## Author
+Samrid Somboon
 
-Created for TimSales Agricultural Sales Management System
+## Acknowledgments
+
+This project was developed with assistance from GitHub Copilot. Copilot provided suggestions for code and documentation; all final decisions and reviews were made by the author.
