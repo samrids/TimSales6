@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- Network permissions for API calls -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+    <application
+        android:name=".TimSalesApplication"
+        android:allowBackup="true"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="@xml/backup_rules"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.TimSales"
+        android:usesCleartextTraffic="true"
+        tools:targetApi="31">
+        
+        <!-- Main Activity -->
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:label="@string/app_name"
+            android:theme="@style/Theme.TimSales.NoActionBar">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        
+        <!-- Add Sales Activity -->
+        <activity
+            android:name=".AddSalesActivity"
+            android:exported="false"
+            android:label="เพิ่มยอดขาย"
+            android:parentActivityName=".MainActivity"
+            android:theme="@style/Theme.TimSales.NoActionBar" />
+        
+        <!-- Sales List Activity -->
+        <activity
+            android:name=".SalesListActivity"
+            android:exported="false"
+            android:label="รายการยอดขาย"
+            android:parentActivityName=".MainActivity"
+            android:theme="@style/Theme.TimSales.NoActionBar" />
+        
+        <!-- Edit Sales Activity -->
+        <activity
+            android:name=".EditSalesActivity"
+            android:exported="false"
+            android:label="แก้ไขยอดขาย"
+            android:parentActivityName=".SalesListActivity"
+            android:theme="@style/Theme.TimSales.NoActionBar" />
+        
+        <!-- TimYear Management Activity -->
+        <activity
+            android:name=".TimYearManagementActivity"
+            android:exported="false"
+            android:label="จัดการปีขาย"
+            android:parentActivityName=".MainActivity"
+            android:theme="@style/Theme.TimSales.NoActionBar" />
+        
+        <!-- Add/Edit TimYear Activity -->
+        <activity
+            android:name=".AddEditTimYearActivity"
+            android:exported="false"
+            android:label="จัดการปีขาย"
+            android:parentActivityName=".TimYearManagementActivity"
+            android:theme="@style/Theme.TimSales.NoActionBar" />
+        
+    </application>
+
+</manifest>

@@ -1,0 +1,59 @@
+<resources>
+    <string name="app_name">TimSales - ระบบยอดขายเกษตร</string>
+    
+    <!-- Main Activity -->
+    <string name="main_title">ระบบเก็บข้อมูลยอดขายสินค้าเกษตร</string>
+    <string name="main_subtitle">สรุปยอดขายประจำเดือน</string>
+    <string name="total_amount">ยอดขายรวม:</string>
+    <string name="total_weight">ปริมาณรวม:</string>
+    <string name="average_price">ราคาเฉลี่ย:</string>
+    <string name="btn_add_sales">📝 เพิ่มยอดขาย</string>
+    <string name="btn_view_sales">📊 ดูรายการยอดขาย</string>
+    <string name="btn_refresh">🔄 รีเฟรช</string>
+    
+    <!-- Add/Edit Sales -->
+    <string name="add_sales_title">เพิ่มข้อมูลยอดขาย</string>
+    <string name="edit_sales_title">แก้ไขข้อมูลยอดขาย</string>
+    <string name="sale_date">วันที่ขาย *</string>
+    <string name="weight">น้ำหนัก (กิโลกรัม) *</string>
+    <string name="unit_price">ราคาต่อหน่วย (บาท/กก.) *</string>
+    <string name="calculated_amount">ยอดรวม:</string>
+    <string name="btn_save">💾 บันทึก</string>
+    <string name="btn_update">✏️ อัปเดต</string>
+    <string name="btn_cancel">❌ ยกเลิก</string>
+    
+    <!-- Sales List -->
+    <string name="sales_list_title">รายการยอดขาย</string>
+    <string name="sales_list_subtitle">แตะที่รายการเพื่อแก้ไข</string>
+    <string name="empty_sales_title">ยังไม่มีข้อมูลยอดขาย</string>
+    <string name="empty_sales_message">กรุณาเพิ่มข้อมูลยอดขายก่อน</string>
+    
+    <!-- Error messages -->
+    <string name="error_loading_data">เกิดข้อผิดพลาดในการโหลดข้อมูล</string>
+    <string name="error_saving_data">เกิดข้อผิดพลาดในการบันทึกข้อมูล</string>
+    <string name="error_network">ไม่สามารถเชื่อมต่อเครือข่ายได้</string>
+    
+    <!-- Success messages -->
+    <string name="success_save">บันทึกข้อมูลเรียบร้อยแล้ว</string>
+    <string name="success_update">อัปเดตข้อมูลเรียบร้อยแล้ว</string>
+    <string name="success_delete">ลบข้อมูลเรียบร้อยแล้ว</string>
+    
+    <!-- Validation messages -->
+    <string name="validate_select_date">กรุณาเลือกวันที่</string>
+    <string name="validate_enter_weight">กรุณาใส่น้ำหนัก</string>
+    <string name="validate_enter_unit_price">กรุณาใส่ราคาต่อหน่วย</string>
+    <string name="validate_weight_positive">น้ำหนักต้องเป็นตัวเลขที่มากกว่า 0</string>
+    <string name="validate_price_positive">ราคาต่อหน่วยต้องเป็นตัวเลขที่มากกว่า 0</string>
+    
+    <!-- Delete confirmation -->
+    <string name="delete_confirmation_title">ยืนยันการลบ</string>
+    <string name="delete_confirmation_message">คุณแน่ใจหรือไม่ที่จะลบข้อมูลการขายนี้?</string>
+    <string name="btn_delete">ลบ</string>
+    <string name="btn_cancel_delete">ยกเลิก</string>
+    
+    <!-- Content descriptions -->
+    <string name="cd_add_sales">เพิ่มยอดขาย</string>
+    <string name="cd_edit_record">แก้ไข</string>
+    <string name="cd_delete_record">ลบ</string>
+    <string name="manage_year_sale">จัดการปีขาย</string>
+</resources>
