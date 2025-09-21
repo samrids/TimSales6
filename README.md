@@ -80,7 +80,7 @@ TIMYEAR_TABLE_ID=TimYear
 
 | Dashboard | Add Sales | Sales List |
 |-----------|-----------|------------|
-| ![Dashboard](screenshots/dashboard.png) | ![Add](screenshots/add.png) | ![List](screenshots/list.png) |
+| ![Dashboard](screenshots/dashboard.jpg) | ![Add](screenshots/add.jpg) | ![List](screenshots/list.jpg) |
 
 ## Technical Stack
 
