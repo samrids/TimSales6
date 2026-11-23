@@ -84,7 +84,7 @@ class AddEditTimYearActivity : AppCompatActivity() {
             setSupportActionBar(findViewById(R.id.toolbar))
             supportActionBar?.setDisplayHomeAsUpEnabled(true)
             
-            val title = if (isEditMode) "แก้ไขปีขาย" else "เพิ่มปีขาย"
+            val title = if (isEditMode) "แก้ไขรอบการขาย" else "เพิ่มรอบการขาย"
             supportActionBar?.title = title
             
             
@@ -137,13 +137,13 @@ class AddEditTimYearActivity : AppCompatActivity() {
             if (isEditMode) {
                 // แก้ไข: แสดงข้อมูลเดิม
                 etSaleYear.setText(existingSaleYear.toString())
-                btnSave.text = "บันทึกการแก้ไข"
+                btnSave.text = "บันทึก"
                 
             } else {
                 // เพิ่มใหม่: แสดงปีปัจจุบัน
                 val currentYear = Calendar.getInstance().get(Calendar.YEAR)
                 etSaleYear.setText(currentYear.toString())
-                btnSave.text = "เพิ่มปีขาย"
+                btnSave.text = "เพิ่มรอบ"
                 
             }
             

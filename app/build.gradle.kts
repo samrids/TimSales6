@@ -77,6 +77,9 @@ dependencies {
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
     implementation("androidx.recyclerview:recyclerview:1.3.2")
     implementation("androidx.cardview:cardview:1.0.0")
+
+    // Charts สำหรับ Dashboard
+    implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
     
     // Network dependencies - Retrofit & Gson
     implementation("com.squareup.retrofit2:retrofit:2.9.0")

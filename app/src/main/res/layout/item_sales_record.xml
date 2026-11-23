@@ -1,185 +1,159 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="8dp"
-    app:cardCornerRadius="8dp"
-    app:cardElevation="4dp"
-    android:background="@android:color/white">
+    android:layout_marginStart="4dp"
+    android:layout_marginEnd="4dp"
+    android:layout_marginTop="4dp"
+    android:layout_marginBottom="8dp">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:padding="12dp">
+        android:padding="14dp"
+        android:gravity="center_vertical">
 
-        <!-- Item Number -->
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_marginEnd="12dp"
-            android:gravity="top">
+        <!-- Leading number -->
+        <FrameLayout
+            android:layout_width="46dp"
+            android:layout_height="46dp"
+            android:background="@drawable/bg_circle_soft"
+            android:backgroundTint="@color/kpi_revenue_bg"
+            android:layout_marginEnd="14dp">
 
             <TextView
                 android:id="@+id/tvItemNumber"
-                android:layout_width="36dp"
-                android:layout_height="36dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
                 android:text="1"
-                android:textSize="14sp"
+                android:textSize="15sp"
                 android:textStyle="bold"
-                android:textColor="@android:color/white"
-                android:background="@drawable/circle_number_bg_blue"
-                android:gravity="center"
-                android:layout_marginTop="4dp" />
+                android:textColor="@color/kpi_revenue" />
+        </FrameLayout>
 
-        </LinearLayout>
-
-        <!-- Main Content -->
+        <!-- Main content -->
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:orientation="vertical">
 
-            <!-- Date and Amount Section -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:layout_marginBottom="8dp">
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:baselineAligned="false">
 
                 <TextView
                     android:id="@+id/tvSaleDate"
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="01/01/2024"
+                    android:layout_weight="1"
+                    android:text="01/01/26"
                     android:textSize="16sp"
                     android:textStyle="bold"
-                    android:textColor="#2c3e50"
-                    android:layout_marginBottom="4dp" />
+                    android:maxLines="1"
+                    android:ellipsize="end"
+                    android:textColor="@color/text_primary" />
 
                 <TextView
                     android:id="@+id/tvAmount"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="1,500.00 บาท"
+                    android:text="฿1,500.00"
                     android:textSize="16sp"
                     android:textStyle="bold"
-                    android:textColor="#27ae60" />
-
+                    android:textColor="@color/kpi_revenue" />
             </LinearLayout>
 
-            <!-- Weight Section -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:layout_marginBottom="4dp">
+                android:layout_marginTop="6dp">
 
                 <TextView
                     android:id="@+id/tvWeight"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="50.00 กก."
-                    android:textSize="14sp"
-                    android:textColor="#7f8c8d"
+                    android:textSize="13sp"
+                    android:textColor="@color/text_secondary"
                     android:drawableStart="@drawable/ic_weight"
                     android:drawablePadding="4dp"
-                    android:drawableTint="#3498db"
-                    android:gravity="start|center_vertical" />
-
-            </LinearLayout>
-
-            <!-- Unit Price Section -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginBottom="4dp">
+                    app:drawableTint="@color/kpi_volume"
+                    android:gravity="center_vertical"
+                    android:layout_marginEnd="16dp" />
 
                 <TextView
                     android:id="@+id/tvUnitPrice"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="30.00 บาท/กก."
-                    android:textSize="14sp"
-                    android:textColor="#7f8c8d"
-                    android:drawableStart="@drawable/ic_money"
+                    android:textSize="13sp"
+                    android:textColor="@color/text_secondary"
+                    android:drawableStart="@drawable/ic_calculator"
                     android:drawablePadding="4dp"
-                    android:drawableTint="#e67e22"
-                    android:gravity="start|center_vertical" />
-
+                    app:drawableTint="@color/kpi_price"
+                    android:gravity="center_vertical" />
             </LinearLayout>
 
-            <!-- Created/Updated Time Section -->
-            <LinearLayout
-                android:layout_width="match_parent"
+            <TextView
+                android:id="@+id/tvCreatedDate"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
+                android:text="สร้าง: 01/01/2026 10:30"
+                android:textSize="11sp"
+                android:textColor="@color/text_tertiary"
+                android:layout_marginTop="6dp" />
 
-                <TextView
-                    android:id="@+id/tvCreatedDate"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="สร้าง: 01/01/2025 10:30"
-                    android:textSize="12sp"
-                    android:textColor="#95a5a6"
-                    android:drawableStart="@drawable/ic_time"
-                    android:drawablePadding="4dp"
-                    android:drawableTint="#95a5a6"
-                    android:gravity="start|center_vertical"
-                    android:layout_marginBottom="2dp" />
-
-                <TextView
-                    android:id="@+id/tvUpdatedDate"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="แก้ไข: 01/01/2025 15:45"
-                    android:textSize="12sp"
-                    android:textColor="#95a5a6"
-                    android:drawableStart="@drawable/ic_edit_modern"
-                    android:drawablePadding="4dp"
-                    android:drawableTint="#95a5a6"
-                    android:gravity="start|center_vertical" />
-
-            </LinearLayout>
-
+            <TextView
+                android:id="@+id/tvUpdatedDate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="แก้ไข: 01/01/2026 15:45"
+                android:textSize="11sp"
+                android:textColor="@color/text_tertiary"
+                android:layout_marginTop="2dp" />
         </LinearLayout>
 
-        <!-- Action Buttons -->
+        <!-- Actions -->
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:layout_marginStart="16dp">
+            android:layout_marginStart="8dp">
 
-            <!-- Edit Button -->
             <ImageButton
                 android:id="@+id/btnEdit"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
-                android:background="?android:attr/selectableItemBackgroundBorderless"
+                android:background="@drawable/bg_circle_soft"
+                android:backgroundTint="@color/kpi_volume_bg"
                 android:src="@drawable/ic_edit_modern"
                 android:contentDescription="แก้ไข"
-                android:tint="#3498db"
-                android:scaleType="center"
-                android:layout_marginBottom="4dp" />
+                android:tint="@color/kpi_volume"
+                android:scaleType="centerInside"
+                android:padding="9dp"
+                android:layout_marginBottom="8dp" />
 
-            <!-- Delete Button -->
             <ImageButton
                 android:id="@+id/btnDelete"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
-                android:background="?android:attr/selectableItemBackgroundBorderless"
+                android:background="@drawable/bg_circle_soft"
+                android:backgroundTint="@color/danger_bg"
                 android:src="@drawable/ic_delete_modern"
                 android:contentDescription="ลบ"
-                android:tint="#e74c3c"
-                android:scaleType="center" />
-
+                android:tint="@color/danger"
+                android:scaleType="centerInside"
+                android:padding="9dp" />
         </LinearLayout>
 
     </LinearLayout>
 
-</androidx.cardview.widget.CardView>
+</com.google.android.material.card.MaterialCardView>

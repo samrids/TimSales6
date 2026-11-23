@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- =========================================================
+         Emerald Pro — Dark tokens
+         ========================================================= -->
+
+    <!-- Brand -->
+    <color name="brand_primary">#34D399</color>         <!-- emerald 400 for contrast -->
+    <color name="brand_primary_dark">#04231A</color>    <!-- toolbar / status bar -->
+    <color name="brand_on_primary">#04231A</color>
+    <color name="brand_container">#065F46</color>
+    <color name="brand_on_container">#A7F3D0</color>
+
+    <!-- Surfaces / background -->
+    <color name="bg_app">#0F1715</color>
+    <color name="surface_card">#18211E</color>
+    <color name="surface_elevated">#1F2A26</color>
+    <color name="card_stroke">#2C3A35</color>
+    <color name="divider">#243029</color>
+
+    <!-- Text -->
+    <color name="text_primary">#E6EDEA</color>
+    <color name="text_secondary">#9CB0A8</color>
+    <color name="text_tertiary">#6B7E77</color>
+
+    <!-- KPI accents (brighter on dark) -->
+    <color name="kpi_revenue">#34D399</color>
+    <color name="kpi_revenue_bg">#0C3A2C</color>
+    <color name="kpi_volume">#38BDF8</color>
+    <color name="kpi_volume_bg">#0B324A</color>
+    <color name="kpi_price">#FBBF24</color>
+    <color name="kpi_price_bg">#3D2E08</color>
+    <color name="kpi_count">#A78BFA</color>
+    <color name="kpi_count_bg">#2E2452</color>
+
+    <!-- Semantic -->
+    <color name="success">#34D399</color>
+    <color name="danger">#F87171</color>
+    <color name="danger_bg">#3A1414</color>
+    <color name="warning">#FBBF24</color>
+
+    <!-- Chart -->
+    <color name="chart_bar">#34D399</color>
+    <color name="chart_line">#38BDF8</color>
+    <color name="chart_fill">#38BDF8</color>
+    <color name="chart_grid">#2C3A35</color>
+    <color name="chart_axis_text">#9CB0A8</color>
+</resources>

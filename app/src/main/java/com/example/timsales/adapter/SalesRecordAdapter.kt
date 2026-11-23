@@ -42,16 +42,6 @@ class SalesRecordAdapter(
         // Bind item number (1-based index)
         val itemNumber = position + 1
         holder.tvItemNumber.text = itemNumber.toString()
-        
-        // Set background color based on position for variety
-        val backgroundRes = when (position % 4) {
-            0 -> R.drawable.circle_number_bg_blue
-            1 -> R.drawable.circle_number_bg_green
-            2 -> R.drawable.circle_number_bg_orange
-            3 -> R.drawable.circle_number_bg_purple
-            else -> R.drawable.circle_number_bg_blue
-        }
-        holder.tvItemNumber.setBackgroundResource(backgroundRes)
 
         // Bind main data to views
         holder.tvSaleDate.text = record.getFormattedDate()

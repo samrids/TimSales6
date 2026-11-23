@@ -226,42 +226,130 @@ class SalesRepository {
     }
 
     /**
-     * คำนวณสถิติยอดขายจากข้อมูลที่ได้
+     * คำนวณ dashboard ของรอบการขายที่เลือก (สถิติรวม + ยอดรายเดือนตลอดรอบ)
+     *
+     * การจับคู่รายการขายเข้ากับรอบ:
+     *  - ถ้า Grist ตั้งคอลัมน์ formula `seasonCode` ไว้ → จับคู่ด้วย seasonCode (แม่นยำที่สุด)
+     *  - ถ้ายังไม่ได้ตั้ง → fallback ไปจับคู่ด้วยช่วงวันที่ของรอบ (startDate..endDate)
      */
-    suspend fun getSalesStatistics(): ApiResult<SalesStatistics> {
+    suspend fun getSeasonDashboard(season: TimYear): ApiResult<SeasonDashboard> {
         return when (val result = getAllSalesRecords()) {
             is ApiResult.Success -> {
-                val records = result.data
-                // กรองเฉพาะข้อมูลปี 2025
-                val records2025 = filterSalesFor2025(records)
-                val statistics = calculateStatistics(records2025)
-                ApiResult.Success(statistics)
+                val seasonSales = filterBySeason(result.data, season)
+                val statistics = calculateStatistics(seasonSales)
+                val monthly = buildMonthlyPoints(season, seasonSales)
+                ApiResult.Success(
+                    SeasonDashboard(
+                        seasonCode = season.resolveSeasonCode(),
+                        statistics = statistics,
+                        monthly = monthly
+                    )
+                )
             }
-            is ApiResult.Error -> {
-                ApiResult.Error(result.exception)
-            }
-            else -> {
-                ApiResult.Error(Exception("Unknown error"))
+            is ApiResult.Error -> ApiResult.Error(result.exception)
+            else -> ApiResult.Error(Exception("Unknown error"))
+        }
+    }
+
+    /**
+     * ดึงเฉพาะรายการขายที่อยู่ในรอบที่เลือก (สำหรับหน้ารายการยอดขาย)
+     */
+    suspend fun getSalesRecordsForSeason(season: TimYear): ApiResult<List<SalesRecord>> {
+        return when (val result = getAllSalesRecords()) {
+            is ApiResult.Success -> ApiResult.Success(filterBySeason(result.data, season))
+            is ApiResult.Error -> ApiResult.Error(result.exception)
+            else -> ApiResult.Error(Exception("Unknown error"))
+        }
+    }
+
+    /**
+     * (เก็บไว้เพื่อ backward compatibility) คำนวณเฉพาะสถิติรวมของรอบ
+     */
+    suspend fun getSalesStatistics(season: TimYear): ApiResult<SalesStatistics> {
+        return when (val dashboard = getSeasonDashboard(season)) {
+            is ApiResult.Success -> ApiResult.Success(dashboard.data.statistics)
+            is ApiResult.Error -> ApiResult.Error(dashboard.exception)
+            else -> ApiResult.Error(Exception("Unknown error"))
+        }
+    }
+
+    /**
+     * กรองเฉพาะรายการขายที่อยู่ในรอบที่ระบุ
+     */
+    private fun filterBySeason(records: List<SalesRecord>, season: TimYear): List<SalesRecord> {
+        val code = season.resolveSeasonCode()
+        return records.filter { record ->
+            try {
+                val recordCode = record.seasonCode
+                if (!recordCode.isNullOrEmpty()) {
+                    recordCode == code
+                } else {
+                    // Fallback: ใช้ช่วงวันที่ของรอบ
+                    season.containsDate(record.saleDate)
+                }
+            } catch (e: Exception) {
+                DebugUtils.logException("SalesRepository", "Error matching season for ${record.saleDate}", e)
+                false
             }
         }
     }
-    
+
     /**
-     * กรองเฉพาะข้อมูลยอดขายในปี 2025
+     * สร้างจุดข้อมูลรายเดือนต่อเนื่องตลอดรอบ (เดือนที่ไม่มียอดจะเป็น 0)
      */
-    private fun filterSalesFor2025(records: List<SalesRecord>): List<SalesRecord> {
-        return records.filter { salesRecord ->
-            try {
-                when {
-                    salesRecord.saleDate.contains("2025") -> true
-                    salesRecord.saleDate.startsWith("2025") -> true
-                    salesRecord.saleDate.length >= 4 && salesRecord.saleDate.substring(0, 4) == "2025" -> true
-                    else -> false
-                }
-            } catch (e: Exception) {
-                DebugUtils.logException("SalesRepository", "Error parsing date ${salesRecord.saleDate}", e)
-                false
+    private fun buildMonthlyPoints(season: TimYear, records: List<SalesRecord>): List<MonthlyPoint> {
+        val months = enumerateMonths(season.getEffectiveStartDate(), season.getEffectiveEndDate())
+        val byMonth = records.groupBy { it.getYearMonth() }
+        return months.map { ym ->
+            val recs = byMonth[ym] ?: emptyList()
+            MonthlyPoint(
+                yearMonth = ym,
+                label = monthLabel(ym),
+                revenue = recs.sumOf { it.amount },
+                kg = recs.sumOf { it.kg },
+                count = recs.size
+            )
+        }
+    }
+
+    /**
+     * ไล่รายชื่อเดือนในรูป YYYY-MM ตั้งแต่เดือนเริ่มถึงเดือนสิ้นสุด (inclusive)
+     */
+    private fun enumerateMonths(start: String, end: String): List<String> {
+        return try {
+            var y = start.substring(0, 4).toInt()
+            var m = start.substring(5, 7).toInt()
+            val endY = end.substring(0, 4).toInt()
+            val endM = end.substring(5, 7).toInt()
+            val out = mutableListOf<String>()
+            var guard = 0
+            while ((y < endY || (y == endY && m <= endM)) && guard < 60) {
+                out.add(String.format("%04d-%02d", y, m))
+                m++
+                if (m > 12) { m = 1; y++ }
+                guard++
             }
+            out
+        } catch (e: Exception) {
+            emptyList()
+        }
+    }
+
+    /**
+     * แปลง YYYY-MM เป็นป้ายแกน X แบบเดือนอังกฤษ + ปี ค.ศ. เช่น "2026-02" -> "Feb 26"
+     * (ใช้ตัวอักษรอังกฤษเพื่อไม่ให้สระภาษาไทยโดนตัดบนแกนกราฟ)
+     */
+    private fun monthLabel(yearMonth: String): String {
+        return try {
+            val yy = yearMonth.substring(2, 4) // 2 หลักท้ายของปี ค.ศ.
+            val m = yearMonth.substring(5, 7).toInt()
+            val names = arrayOf(
+                "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+                "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+            )
+            if (m in 1..12) "${names[m - 1]} $yy" else yearMonth
+        } catch (e: Exception) {
+            yearMonth
         }
     }
 
@@ -275,7 +363,8 @@ class SalesRepository {
 
         val totalAmount = records.sumOf { it.amount }
         val totalKg = records.sumOf { it.kg }
-        val averageUnitPrice = if (records.isNotEmpty()) records.map { it.unitPrice }.average() else 0.0
+        // ราคาเฉลี่ยต่อกก. = ยอดขายรวม / น้ำหนักรวม (weighted average)
+        val averageUnitPrice = if (totalKg > 0) totalAmount / totalKg else 0.0
         
         
         return SalesStatistics(

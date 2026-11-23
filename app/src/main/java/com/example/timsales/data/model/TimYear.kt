@@ -11,15 +11,69 @@ import java.util.Locale
  */
 data class TimYear(
     val id: Int = 0,
-    @SerializedName("saleYear") val saleYear: Int, // ปีขาย (Integer)
+    @SerializedName("saleYear") val saleYear: Int, // ปีเริ่มต้นของรอบ (Integer เช่น 2026 = รอบ 2026/27)
+    @SerializedName("startDate") val startDate: String? = null, // วันเริ่มรอบการขาย (YYYY-MM-DD)
+    @SerializedName("endDate") val endDate: String? = null, // วันสิ้นสุดรอบการขาย (YYYY-MM-DD)
+    @SerializedName("seasonCode") val seasonCode: String? = null, // รหัสรอบ (formula จาก Grist เช่น "2026/27")
     @SerializedName("created_at") val createdAt: String? = null, // DateTime string from server
     @SerializedName("updated_at") val updatedAt: String? = null // DateTime string from server
 ) {
     /**
-     * Format ปีสำหรับแสดงผล
+     * รหัสรอบการขาย เช่น "2026/27"
+     * ใช้ค่าจาก Grist ถ้ามี ไม่งั้น derive จาก saleYear
+     */
+    fun resolveSeasonCode(): String {
+        if (!seasonCode.isNullOrEmpty()) return seasonCode
+        val nextTwo = ((saleYear + 1) % 100)
+        return String.format("%d/%02d", saleYear, nextTwo)
+    }
+
+    /**
+     * Label สำหรับแสดงผล เช่น "รอบ 2026/27"
+     */
+    fun getSeasonLabel(): String {
+        return "รอบ ${resolveSeasonCode()}"
+    }
+
+    /**
+     * วันเริ่มรอบที่ใช้งานจริง (YYYY-MM-DD)
+     * ใช้ค่าจาก Grist ถ้ามี ไม่งั้น default = 1 ก.พ. ของปีเริ่มรอบ
+     */
+    fun getEffectiveStartDate(): String {
+        return normalizeDate(startDate) ?: String.format("%04d-02-01", saleYear)
+    }
+
+    /**
+     * วันสิ้นสุดรอบที่ใช้งานจริง (YYYY-MM-DD)
+     * ใช้ค่าจาก Grist ถ้ามี ไม่งั้น default = 31 มี.ค. ของปีถัดไป
+     */
+    fun getEffectiveEndDate(): String {
+        return normalizeDate(endDate) ?: String.format("%04d-03-31", saleYear + 1)
+    }
+
+    /**
+     * ตรวจว่าวันที่ขายอยู่ในรอบนี้หรือไม่ (ใช้เป็น fallback เมื่อ Grist ยังไม่ได้ตั้ง seasonCode)
+     */
+    fun containsDate(rawSaleDate: String): Boolean {
+        val d = normalizeDate(rawSaleDate) ?: return false
+        return d >= getEffectiveStartDate() && d <= getEffectiveEndDate()
+    }
+
+    private fun normalizeDate(raw: String?): String? {
+        if (raw.isNullOrEmpty()) return null
+        return try {
+            val datePart = raw.split("T")[0].split(" ")[0]
+            if (datePart.length >= 10 && datePart[4] == '-') datePart.substring(0, 10) else null
+        } catch (e: Exception) {
+            null
+        }
+    }
+
+    /**
+     * Format ปีสำหรับแสดงผล (เก็บไว้เพื่อ backward compatibility)
      */
     fun getFormattedYear(): String {
-        return "ปี $saleYear"
+        return getSeasonLabel()
     }
 
     /**

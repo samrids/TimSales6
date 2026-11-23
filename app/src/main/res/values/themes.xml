@@ -1,50 +1,128 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
 
-    <!-- Base application theme using AppCompat -->
-    <style name="Theme.TimSales" parent="Theme.AppCompat.Light.DarkActionBar">
-        <!-- Primary brand color -->
-        <item name="colorPrimary">#2c3e50</item>
-        <item name="colorPrimaryVariant">#1a252f</item>
-        <item name="colorOnPrimary">@android:color/white</item>
-        
-        <!-- Secondary brand color -->
-        <item name="colorSecondary">#27ae60</item>
-        <item name="colorSecondaryVariant">#1e8449</item>
-        <item name="colorOnSecondary">@android:color/white</item>
-        
-        <!-- Status bar color -->
-        <item name="android:statusBarColor" tools:targetApi="l">#1a252f</item>
-        
-        <!-- Background colors -->
-        <item name="android:windowBackground">#f8f9fa</item>
-        
-        <!-- Text colors -->
-        <item name="android:textColorPrimary">#2c3e50</item>
-        <item name="android:textColorSecondary">#7f8c8d</item>
+    <!-- ============ Base app theme — Material 3 (Light) ============ -->
+    <style name="Theme.TimSales" parent="Theme.Material3.Light.NoActionBar">
+        <!-- Brand -->
+        <item name="colorPrimary">@color/brand_primary</item>
+        <item name="colorOnPrimary">@color/brand_on_primary</item>
+        <item name="colorPrimaryContainer">@color/brand_container</item>
+        <item name="colorOnPrimaryContainer">@color/brand_on_container</item>
+        <item name="colorSecondary">@color/kpi_volume</item>
+        <item name="colorOnSecondary">@color/white</item>
+
+        <!-- Surfaces -->
+        <item name="colorSurface">@color/surface_card</item>
+        <item name="colorOnSurface">@color/text_primary</item>
+        <item name="colorSurfaceVariant">@color/divider</item>
+        <item name="colorOnSurfaceVariant">@color/text_secondary</item>
+        <item name="colorOutline">@color/card_stroke</item>
+        <item name="android:colorBackground">@color/bg_app</item>
+        <item name="colorOnBackground">@color/text_primary</item>
+        <item name="colorError">@color/danger</item>
+
+        <!-- Window / system bars -->
+        <item name="android:windowBackground">@color/bg_app</item>
+        <item name="android:statusBarColor">@color/brand_primary_dark</item>
+        <item name="android:navigationBarColor">@color/bg_app</item>
+        <item name="android:windowLightStatusBar" tools:targetApi="m">false</item>
+        <item name="android:windowLightNavigationBar" tools:targetApi="o_mr1">true</item>
+
+        <!-- Text -->
+        <item name="android:textColorPrimary">@color/text_primary</item>
+        <item name="android:textColorSecondary">@color/text_secondary</item>
+
+        <!-- Component defaults -->
+        <item name="materialCardViewStyle">@style/Widget.TimSales.Card</item>
+        <item name="toolbarStyle">@style/Widget.TimSales.Toolbar</item>
     </style>
 
-    <!-- Theme for Activities without ActionBar -->
-    <style name="Theme.TimSales.NoActionBar" parent="Theme.AppCompat.Light.NoActionBar">
-        <!-- Primary brand color -->
-        <item name="colorPrimary">#2c3e50</item>
-        <item name="colorPrimaryVariant">#1a252f</item>
-        <item name="colorOnPrimary">@android:color/white</item>
-        
-        <!-- Secondary brand color -->
-        <item name="colorSecondary">#27ae60</item>
-        <item name="colorSecondaryVariant">#1e8449</item>
-        <item name="colorOnSecondary">@android:color/white</item>
-        
-        <!-- Status bar color -->
-        <item name="android:statusBarColor" tools:targetApi="l">#1a252f</item>
-        
-        <!-- Background colors -->
-        <item name="android:windowBackground">#f8f9fa</item>
-        
-        <!-- Text colors -->
-        <item name="android:textColorPrimary">#2c3e50</item>
-        <item name="android:textColorSecondary">#7f8c8d</item>
+    <!-- All activities are NoActionBar + custom toolbar -->
+    <style name="Theme.TimSales.NoActionBar" parent="Theme.TimSales" />
+
+    <!-- ============ Component styles ============ -->
+
+    <!-- Card: flat, rounded, hairline stroke -->
+    <style name="Widget.TimSales.Card" parent="Widget.Material3.CardView.Elevated">
+        <item name="cardBackgroundColor">@color/surface_card</item>
+        <item name="cardCornerRadius">20dp</item>
+        <item name="cardElevation">0dp</item>
+        <item name="strokeColor">@color/card_stroke</item>
+        <item name="strokeWidth">1dp</item>
+        <item name="contentPadding">0dp</item>
+    </style>
+
+    <!-- Toolbar: deep emerald brand bar -->
+    <style name="Widget.TimSales.Toolbar" parent="Widget.Material3.Toolbar">
+        <item name="android:background">@color/brand_primary_dark</item>
+        <item name="titleTextColor">@color/white</item>
+        <item name="titleTextAppearance">@style/TextAppearance.TimSales.Toolbar</item>
+        <item name="android:theme">@style/ThemeOverlay.Material3.Dark</item>
+        <item name="popupTheme">@style/ThemeOverlay.Material3.Light</item>
+    </style>
+
+    <style name="TextAppearance.TimSales.Toolbar" parent="TextAppearance.Material3.TitleLarge">
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">20sp</item>
+    </style>
+
+    <!-- KPI value text -->
+    <style name="TextAppearance.TimSales.KpiValue" parent="TextAppearance.Material3.TitleLarge">
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">19sp</item>
+    </style>
+
+    <!-- Section title -->
+    <style name="TextAppearance.TimSales.Section" parent="TextAppearance.Material3.TitleMedium">
+        <item name="android:textColor">@color/text_primary</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <!-- Field label -->
+    <style name="TextAppearance.TimSales.Label" parent="TextAppearance.Material3.LabelLarge">
+        <item name="android:textColor">@color/text_secondary</item>
+    </style>
+
+    <!-- Primary action button -->
+    <style name="Widget.TimSales.Button" parent="Widget.Material3.Button">
+        <item name="android:paddingTop">12dp</item>
+        <item name="android:paddingBottom">12dp</item>
+        <item name="cornerRadius">14dp</item>
+        <item name="android:textSize">15sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:includeFontPadding">true</item>
+        <item name="android:letterSpacing">0</item>
+    </style>
+
+    <!-- Tonal / secondary button -->
+    <style name="Widget.TimSales.Button.Tonal" parent="Widget.Material3.Button.TonalButton">
+        <item name="cornerRadius">14dp</item>
+        <item name="android:textSize">15sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:includeFontPadding">true</item>
+        <item name="android:letterSpacing">0</item>
+        <item name="android:paddingTop">12dp</item>
+        <item name="android:paddingBottom">12dp</item>
+    </style>
+
+    <!-- Outlined button -->
+    <style name="Widget.TimSales.Button.Outlined" parent="Widget.Material3.Button.OutlinedButton">
+        <item name="cornerRadius">14dp</item>
+        <item name="android:textSize">15sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:includeFontPadding">true</item>
+        <item name="android:letterSpacing">0</item>
+        <item name="android:paddingTop">12dp</item>
+        <item name="android:paddingBottom">12dp</item>
+    </style>
+
+    <!-- Text input -->
+    <style name="Widget.TimSales.TextInput" parent="Widget.Material3.TextInputLayout.OutlinedBox">
+        <item name="boxCornerRadiusTopStart">14dp</item>
+        <item name="boxCornerRadiusTopEnd">14dp</item>
+        <item name="boxCornerRadiusBottomStart">14dp</item>
+        <item name="boxCornerRadiusBottomEnd">14dp</item>
     </style>
 
 </resources>

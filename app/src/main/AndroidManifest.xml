@@ -70,7 +70,16 @@
             android:label="จัดการปีขาย"
             android:parentActivityName=".TimYearManagementActivity"
             android:theme="@style/Theme.TimSales.NoActionBar" />
-        
+
+        <!-- Fullscreen Chart (landscape) -->
+        <activity
+            android:name=".ChartFullscreenActivity"
+            android:exported="false"
+            android:label="กราฟ"
+            android:screenOrientation="landscape"
+            android:parentActivityName=".MainActivity"
+            android:theme="@style/Theme.TimSales.NoActionBar" />
+
     </application>
 
 </manifest>

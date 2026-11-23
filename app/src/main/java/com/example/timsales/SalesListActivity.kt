@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.timsales.adapter.SalesRecordAdapter
 import com.example.timsales.data.model.ApiResult
 import com.example.timsales.data.model.SalesRecord
+import com.example.timsales.data.model.TimYear
 import com.example.timsales.data.repository.SalesRepository
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import kotlinx.coroutines.launch
@@ -33,13 +34,23 @@ class SalesListActivity : BaseNetworkActivity() {
 
     private var salesRecords = mutableListOf<SalesRecord>()
 
+    // รอบการขายที่เลือกมาจากหน้าหลัก (ใช้กรองรายการ)
+    private var currentSeason: TimYear? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_sales_list)
-        
+
+        // Top app bar with back navigation
+        setSupportActionBar(findViewById(R.id.toolbar))
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+
+        // อ่านรอบการขายที่ส่งมาจากหน้าหลัก
+        readSeasonFromIntent()
+
     // Initialize repository (lazy) - touch to ensure initialization
     val repo = repository
-        
+
         // Initialize views
         initViews()
         
@@ -51,6 +62,27 @@ class SalesListActivity : BaseNetworkActivity() {
         
         // Load data
         loadSalesRecords()
+    }
+
+    override fun onSupportNavigateUp(): Boolean {
+        finish()
+        return true
+    }
+
+    private fun readSeasonFromIntent() {
+        val year = intent.getIntExtra("SEASON_YEAR", 0)
+        currentSeason = if (year > 0) {
+            TimYear(
+                saleYear = year,
+                startDate = intent.getStringExtra("SEASON_START"),
+                endDate = intent.getStringExtra("SEASON_END"),
+                seasonCode = intent.getStringExtra("SEASON_CODE")
+            )
+        } else {
+            null
+        }
+        // แสดงรอบบน toolbar
+        currentSeason?.let { supportActionBar?.subtitle = it.getSeasonLabel() }
     }
 
     private fun initViews() {
@@ -91,8 +123,16 @@ class SalesListActivity : BaseNetworkActivity() {
         
         lifecycleScope.launch {
             showLoading(true)
-            
-            when (val result = repository.getAllSalesRecords()) {
+
+            // ถ้ามีรอบที่เลือก ให้กรองเฉพาะรอบนั้น ไม่งั้นแสดงทั้งหมด
+            val season = currentSeason
+            val result = if (season != null) {
+                repository.getSalesRecordsForSeason(season)
+            } else {
+                repository.getAllSalesRecords()
+            }
+
+            when (result) {
                 is ApiResult.Success -> {
                     showLoading(false)
                     val records = result.data
