@@ -1,0 +1,25 @@
+# Block direct web access to the .env file (password hash, API token),
+# docs and any SQLite database file. Works on Apache 2.2 and 2.4.
+# The app/ and data/ folders have their own .htaccess that denies everything.
+
+<FilesMatch "(^\.env|\.env\.example$|\.md$|\.htaccess$|\.sqlite3?$|\.sqlite-journal$|\.db$)">
+  <IfModule mod_authz_core.c>
+    # Apache 2.4+
+    Require all denied
+  </IfModule>
+  <IfModule !mod_authz_core.c>
+    # Apache 2.2
+    Order allow,deny
+    Deny from all
+  </IfModule>
+</FilesMatch>
+
+# Pass the Authorization header to PHP (CGI/FastCGI hosts drop it otherwise).
+# api.php also accepts X-Api-Key, so the API works even if this has no effect.
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteCond %{HTTP:Authorization} .
+  RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+</IfModule>
+
+DirectoryIndex index.php

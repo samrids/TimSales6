@@ -16,3 +16,21 @@ local.properties
 
 # Environment variables - ไม่ควร commit เข้า git
 .env
+
+# Web version (web/) — secrets and deploy state
+web/.env
+.env_deploy
+.deploy-manifest*
+.deploy-backups/
+
+# Web SQLite database (local copy) — the live one stays on the server
+web/data/*.sqlite
+web/data/*.sqlite-journal
+
+# Real sales data and screenshots — repo is public, keep local only
+docs/
+
+# JVM crash dumps / IDE local state
+hs_err_pid*.log
+replay_pid*.log
+.idea/copilot.data.migration.agent.xml
