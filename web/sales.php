@@ -38,6 +38,7 @@ foreach (array_reverse($records) as $r) {
 }
 
 $pageTitle = 'รายการขาย';
+$srHeading = true;
 $activeNav = 'sales';
 $fabUrl = 'sale_form.php';
 $fabLabel = 'เพิ่มยอดขาย';
@@ -69,10 +70,10 @@ require APP_DIR . '/views/header.php';
   </div>
 <?php endif; ?>
 
-<section class="summary-strip">
-  <div><span class="stat-label">ยอดขาย</span><strong><?php echo h(fmt_number($stats['totalAmount'])); ?></strong><small>บาท</small></div>
-  <div><span class="stat-label">ปริมาณ</span><strong><?php echo h(fmt_trim($stats['totalKg'])); ?></strong><small>กก.</small></div>
-  <div><span class="stat-label">รายการ</span><strong><?php echo (int)$stats['recordCount']; ?></strong></div>
+<section class="stats">
+  <div class="card stat"><div class="stat-label">ยอดขาย</div><div class="stat-value"><?php echo h(fmt_number($stats['totalAmount'])); ?> <small>บาท</small></div></div>
+  <div class="card stat"><div class="stat-label">ปริมาณ</div><div class="stat-value"><?php echo h(fmt_trim($stats['totalKg'])); ?> <small>กก.</small></div></div>
+  <div class="card stat"><div class="stat-label">รายการ</div><div class="stat-value"><?php echo (int)$stats['recordCount']; ?> <small>รายการ</small></div></div>
 </section>
 
 <?php if ($error !== null): ?>

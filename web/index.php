@@ -41,6 +41,7 @@ foreach ($monthly as $p) {
 $recent = array_slice(array_reverse($sales), 0, 5);
 
 $pageTitle = $season !== null ? 'ภาพรวม ' . $season->label() : 'ภาพรวม';
+$srHeading = true;
 $activeNav = 'dashboard';
 $useCharts = !empty($monthly);
 $fabUrl = 'sale_form.php';

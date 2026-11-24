@@ -51,7 +51,8 @@ require APP_DIR . '/views/header.php';
   <?php foreach ($seasons as $s):
       $t = isset($totals[$s->saleYear]) ? $totals[$s->saleYear] : array('count' => 0, 'amount' => 0.0); ?>
     <li>
-      <a class="card season-card" href="<?php echo h(url('season_form.php', array('id' => $s->id))); ?>" aria-label="<?php echo h('แก้ไข' . $s->label()); ?>">
+      <a class="card season-card" href="<?php echo h(url('season_form.php', array('id' => $s->id))); ?>">
+        <span class="sr-only">แก้ไข</span>
         <div class="season-card-head">
           <h2><?php echo h($s->label()); ?></h2>
           <?php echo season_chip($s); ?>

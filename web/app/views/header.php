@@ -1,5 +1,6 @@
 <?php
 // Expects: $pageTitle (string)
+// Optional: $srHeading (bool) — page has no visible <h1>; emit a screen-reader-only one
 // Optional: $backUrl (string) — sub-page with a back arrow instead of the brand
 //           $activeNav ('dashboard'|'sales'|'seasons'|'data') — highlights the nav item
 //           $hideNav (bool) — no navigation at all (login)
@@ -39,6 +40,7 @@ $navItems = array(
         <span class="brand-mark"><?php echo icon('leaf', 18); ?></span>
         <span class="brand-name">TimSales</span>
       </a>
+      <?php if (!empty($srHeading)): ?><h1 class="sr-only"><?php echo h($pageTitle); ?></h1><?php endif; ?>
     <?php endif; ?>
 
     <?php if (!$hideNav && is_logged_in()): ?>
