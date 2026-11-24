@@ -44,8 +44,8 @@
   // Disable the submit button once, so a slow save can't be sent twice
   each('form.form', function (form) {
     form.addEventListener('submit', function () {
-      var btn = form.querySelector('button[type=submit]');
-      if (btn) { setTimeout(function () { btn.disabled = true; }, 0); }
+      var btns = form.querySelectorAll('button[type=submit]');
+      setTimeout(function () { Array.prototype.forEach.call(btns, function (b) { b.disabled = true; }); }, 0);
     });
   });
 
@@ -399,9 +399,8 @@
   // Table view: the full monthly numbers (a chart's accessible twin)
   viewBtn.addEventListener('click', function () {
     var showTable = viewBtn.getAttribute('aria-pressed') !== 'true';
+    // The name stays "แสดงเป็นตาราง"; only aria-pressed changes, so it reads as an on/off switch
     viewBtn.setAttribute('aria-pressed', showTable ? 'true' : 'false');
-    viewBtn.setAttribute('title', showTable ? 'แสดงเป็นกราฟ' : 'แสดงเป็นตาราง');
-    viewBtn.setAttribute('aria-label', showTable ? 'แสดงเป็นกราฟ' : 'แสดงเป็นตาราง');
     tableBox.hidden = !showTable;
     chartBox.hidden = showTable;
     segmented.hidden = showTable;
@@ -415,21 +414,50 @@
   var modalTitle = document.getElementById('chartModalTitle');
   var modalChart = null;
   var lastFocus = null;
+  var inerted = [];
+
+  // The dialog lives inside <main>; move it to <body> so everything else can be made inert
+  document.body.appendChild(modal);
+
+  // While open, the page behind can't be tabbed to, clicked or read (inert + aria-hidden fallback)
+  function setBackgroundInert(on) {
+    if (on) {
+      inerted = Array.prototype.filter.call(document.body.children, function (el) {
+        return el !== modal && el.tagName !== 'SCRIPT';
+      });
+    }
+    inerted.forEach(function (el) {
+      if (on) { el.setAttribute('inert', ''); el.setAttribute('aria-hidden', 'true'); }
+      else { el.removeAttribute('inert'); el.removeAttribute('aria-hidden'); }
+    });
+    if (!on) { inerted = []; }
+  }
 
   function openModal() {
     lastFocus = document.activeElement;
     modalTitle.textContent = METRICS[metric].title + ' (' + METRICS[metric].unit + ')';
     modal.hidden = false;
     document.body.style.overflow = 'hidden';
+    setBackgroundInert(true);
     modalChart = new Chart(modalCanvas, config(metric, true));
     modal.querySelector('[data-close-modal]').focus();
   }
   function closeModal() {
     if (modalChart) { modalChart.destroy(); modalChart = null; }
+    setBackgroundInert(false);
     modal.hidden = true;
     document.body.style.overflow = '';
     if (lastFocus) { lastFocus.focus(); }
   }
+  // Focus trap for browsers without `inert`: Tab wraps inside the dialog
+  modal.addEventListener('keydown', function (e) {
+    if (e.key !== 'Tab') { return; }
+    var f = modal.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+    if (!f.length) { e.preventDefault(); return; }
+    var first = f[0], last = f[f.length - 1];
+    if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+    else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+  });
   $('[data-fullscreen]', card).addEventListener('click', openModal);
   each('[data-close-modal]', function (btn) { btn.addEventListener('click', closeModal); });
   modal.addEventListener('click', function (e) { if (e.target === modal) { closeModal(); } });

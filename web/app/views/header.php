@@ -24,9 +24,8 @@ $navItems = array(
 <meta name="color-scheme" content="light dark">
 <meta name="robots" content="noindex, nofollow">
 <title><?php echo h($pageTitle); ?> · TimSales</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600;700&display=swap">
+<?php /* Self-hosted font (no Google round-trip). Preload the Thai file: nearly every page is Thai text. */ ?>
+<link rel="preload" href="assets/fonts/noto-sans-thai-thai-v29.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="<?php echo h(asset('assets/css/style.css')); ?>">
 </head>
 <body class="<?php echo ($activeNav !== null && !$hideNav) ? 'has-tabbar' : ''; ?>">

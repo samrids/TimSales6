@@ -2,6 +2,19 @@
    TimSales web — clean, minimal, mobile-first. Light + dark.
    One brand hue (emerald); everything else is neutral.
    ========================================================== */
+/* Noto Sans Thai, self-hosted (SIL OFL 1.1, see assets/fonts/OFL.txt).
+   Variable font: one file per script covers weights 400–700. */
+@font-face {
+  font-family: "Noto Sans Thai"; font-style: normal; font-weight: 400 700; font-display: swap;
+  src: url("../fonts/noto-sans-thai-thai-v29.woff2") format("woff2");
+  unicode-range: U+02D7, U+0303, U+0331, U+0E01-0E5B, U+200C-200D, U+25CC;
+}
+@font-face {
+  font-family: "Noto Sans Thai"; font-style: normal; font-weight: 400 700; font-display: swap;
+  src: url("../fonts/noto-sans-thai-latin-v29.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
 :root {
   color-scheme: light;
   --bg: #F6F8F7;
@@ -331,6 +344,8 @@ input:focus, select.input:focus { outline: 2px solid var(--brand); outline-offse
 .total-box strong { font-size: 1.5rem; font-variant-numeric: tabular-nums; }
 .total-box small { font-size: .55em; font-weight: 500; }
 .form-buttons { display: grid; grid-template-columns: 1fr 2fr; gap: 10px; }
+.form-buttons-3 { grid-template-columns: 1fr 2fr; }
+.form-buttons-3 .btn-primary { grid-column: 1 / -1; }
 .meta-line { color: var(--text-3); font-size: .82rem; text-align: center; margin: 4px 0 8px; }
 .danger-zone { display: flex; justify-content: center; }
 
@@ -381,6 +396,7 @@ input:focus, select.input:focus { outline: 2px solid var(--brand); outline-offse
 .modal {
   position: fixed; inset: 0; z-index: 50; background: rgba(8, 12, 11, .6);
   display: flex; align-items: center; justify-content: center; padding: 12px;
+  overscroll-behavior: contain;
 }
 .modal[hidden] { display: none; }
 .modal-inner {

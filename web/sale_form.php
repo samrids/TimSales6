@@ -14,6 +14,10 @@ $resumed = false;
 
 // Form values (strings, so the user's input is redisplayed as typed)
 $form = array('saleDate' => date('Y-m-d'), 'kg' => '', 'unitPrice' => '');
+// "บันทึกและเพิ่มต่อ" comes back with ?date= so a run of sales keeps the same day
+if (!$isEdit && isset($_GET['date']) && is_string($_GET['date']) && to_ymd($_GET['date']) === $_GET['date']) {
+    $form['saleDate'] = (string)$_GET['date'];
+}
 
 try {
     $seasons = season_repo()->all();
@@ -64,6 +68,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $error === null) {
                 flash('success', 'แก้ไขข้อมูลเรียบร้อยแล้ว');
             } else {
                 $savedId = sales_repo()->create($v['saleDate'], $v['kg'], $v['unitPrice']);
+                if (!empty($_POST['next'])) {
+                    // Logging several sales in a row: fresh form, same date
+                    flash('success', 'บันทึกแล้ว ' . fmt_date_th($v['saleDate']) . ' · ' . fmt_trim($v['kg']) . ' กก. · '
+                        . fmt_money($v['kg'] * $v['unitPrice']) . ' — เพิ่มรายการถัดไปได้เลย');
+                    redirect(url('sale_form.php', array('date' => $v['saleDate'])));
+                }
                 flash('success', 'บันทึกข้อมูลเรียบร้อยแล้ว');
             }
             // Land on the season the sale actually counts toward, not the one last viewed
@@ -129,10 +139,19 @@ require APP_DIR . '/views/header.php';
     <span>ยอดรวม</span>
     <strong><span data-total>0.00</span> <small>บาท</small></strong>
   </div>
+  <?php if ($isEdit): ?>
   <div class="form-buttons">
     <a class="btn btn-quiet" href="<?php echo h($backUrl); ?>">ยกเลิก</a>
     <button type="submit" class="btn btn-primary"><?php echo icon('check', 18); ?> บันทึก</button>
   </div>
+  <?php else: ?>
+  <?php /* "บันทึก" first in the DOM so Enter keeps doing a plain save */ ?>
+  <div class="form-buttons form-buttons-3">
+    <button type="submit" class="btn btn-primary"><?php echo icon('check', 18); ?> บันทึก</button>
+    <a class="btn btn-quiet" href="<?php echo h($backUrl); ?>">ยกเลิก</a>
+    <button type="submit" class="btn btn-quiet" name="next" value="1"><?php echo icon('plus', 18); ?> บันทึกและเพิ่มต่อ</button>
+  </div>
+  <?php endif; ?>
   <script type="application/json" id="seasonRanges"><?php echo json_for_html($ranges); ?></script>
 </form>
 
