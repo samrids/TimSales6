@@ -25,11 +25,15 @@ function csrf_field() {
     return '<input type="hidden" name="csrf" value="' . htmlspecialchars(csrf_token(), ENT_QUOTES, 'UTF-8') . '">';
 }
 
-/** Abort the request unless the posted token matches the session token. */
+/**
+ * Stop the request unless the posted token matches the session token.
+ * Nothing is saved; the user goes back to the page (with a fresh token and,
+ * on the add/edit forms, what they typed) instead of a bare error page.
+ */
 function csrf_check() {
     $sent = isset($_POST['csrf']) ? (string)$_POST['csrf'] : '';
     if ($sent === '' || empty($_SESSION['csrf']) || !hash_equals($_SESSION['csrf'], $sent)) {
-        http_response_code(400);
-        exit('คำขอไม่ถูกต้อง (CSRF) — กรุณาโหลดหน้าใหม่แล้วลองอีกครั้ง');
+        flash('error', 'หน้านี้เปิดค้างไว้นานเกินไป จึงยังไม่ได้บันทึกการเปลี่ยนแปลง กรุณาลองอีกครั้ง');
+        redirect(interrupted_post_url());
     }
 }

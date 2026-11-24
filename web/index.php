@@ -54,16 +54,9 @@ require APP_DIR . '/views/header.php';
 
 <?php if ($season !== null): ?>
 <section class="page-head">
-  <form method="get" action="index.php" class="season-switch">
-    <label for="season" class="sr-only">รอบการขาย</label>
-    <select id="season" name="season" data-autosubmit>
-      <?php foreach ($seasons as $s): ?>
-        <option value="<?php echo h($s->code()); ?>"<?php echo $s->code() === $season->code() ? ' selected' : ''; ?>><?php echo h($s->label()); ?></option>
-      <?php endforeach; ?>
-    </select>
-    <noscript><button type="submit" class="btn btn-quiet">แสดง</button></noscript>
-  </form>
+  <p class="season-title"><?php echo h($season->label()); ?></p>
   <p class="season-meta"><?php echo season_chip($season); ?><span><?php echo h(season_range($season)); ?></span></p>
+  <?php echo season_tabs($seasons, $season, 'index.php'); ?>
 </section>
 
 <section class="card hero">

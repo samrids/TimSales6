@@ -94,6 +94,12 @@ class SalesRepository {
         return (int)$this->db->lastInsertId();
     }
 
+    /** Price of the most recent sale, for the "use last price" shortcut: array('unitPrice', 'saleDate') or null */
+    public function latestPrice() {
+        $row = $this->db->query('SELECT unit_price, sale_date FROM sales ORDER BY sale_date DESC, id DESC LIMIT 1')->fetch();
+        return $row ? array('unitPrice' => (float)$row['unit_price'], 'saleDate' => (string)$row['sale_date']) : null;
+    }
+
     public function update($id, $saleDate, $kg, $unitPrice) {
         $st = $this->db->prepare('UPDATE sales SET sale_date = ?, kg = ?, unit_price = ?, updated_at = ? WHERE id = ?');
         $st->execute(array($saleDate, (float)$kg, (float)$unitPrice, db_now(), (int)$id));

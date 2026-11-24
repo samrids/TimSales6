@@ -27,7 +27,10 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] === 'POST') 
         session_regenerate_id(true);
         $_SESSION['auth'] = true;
         $_SESSION['csrf'] = random_hex(32);
-        redirect('index.php');
+        // Back to the page the user was on when the session ran out
+        $back = isset($_SESSION['return_to']) ? $_SESSION['return_to'] : '';
+        unset($_SESSION['return_to']);
+        redirect(is_safe_return_url($back) ? $back : 'index.php');
     } else {
         sleep(1); // slow down password guessing
         $error = 'รหัสผ่านไม่ถูกต้อง';

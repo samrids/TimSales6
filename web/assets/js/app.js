@@ -15,8 +15,24 @@
   }
 
   // ---------- Generic ----------
-  each('select[data-autosubmit]', function (el) {
-    el.addEventListener('change', function () { el.form.submit(); });
+  // Season links: keep the current one in view when the row scrolls sideways
+  each('.season-tabs [aria-current]', function (el) {
+    var row = el.parentNode.parentNode;
+    row.scrollLeft = el.offsetLeft - (row.clientWidth - el.offsetWidth) / 2;
+  });
+
+  // "ใช้ราคาล่าสุด": fill the price only when the user taps it
+  each('[data-fill-price]', function (btn) {
+    var price = document.getElementById('unitPrice');
+    if (!price) { return; }
+    function sync() { btn.hidden = price.value.trim() !== ''; }
+    btn.addEventListener('click', function () {
+      price.value = btn.getAttribute('data-fill-price');
+      price.dispatchEvent(new Event('input', { bubbles: true }));
+      price.focus();
+    });
+    price.addEventListener('input', sync);
+    sync();
   });
 
   each('form[data-confirm]', function (form) {
@@ -139,8 +155,20 @@
     return n.toLocaleString('en-US', { maximumFractionDigits: 2 });
   }
 
-  function seriesValues(key) {
-    return points.map(function (p) {
+  // Phones: a 14-month season leaves ~13px per bar. In the card chart, drop the months
+  // still ahead and label only the peak; every value stays in the tooltip, the table
+  // view and the fullscreen chart.
+  var narrowMq = window.matchMedia ? window.matchMedia('(max-width: 519px)') : null;
+  function compactChart(big) { return !big && !!(narrowMq && narrowMq.matches); }
+  function shownPoints(big) {
+    if (!compactChart(big)) { return points; }
+    var n = points.length;
+    while (n > 0 && points[n - 1].future) { n--; }
+    return n > 0 ? points.slice(0, n) : points; // trailing only, so indexes still match points[]
+  }
+
+  function seriesValues(key, pts) {
+    return pts.map(function (p) {
       if (p.future) { return null; }
       return key === 'price' ? p.price : p[key];
     });
@@ -251,7 +279,8 @@
   };
 
   function config(key, big) {
-    var m = METRICS[key], col = palette(), values = seriesValues(key), isLine = m.type === 'line';
+    var m = METRICS[key], col = palette(), isLine = m.type === 'line';
+    var pts = shownPoints(big), values = seriesValues(key, pts);
     var dataset = isLine ? {
       data: values,
       borderColor: col.series,
@@ -280,8 +309,8 @@
 
     return {
       type: m.type,
-      data: { labels: points.map(function (p) { return p.label; }), datasets: [dataset] },
-      plugins: isLine ? [crosshair, peakLabel] : [barValues],
+      data: { labels: pts.map(function (p) { return p.label; }), datasets: [dataset] },
+      plugins: isLine ? [crosshair, peakLabel] : (compactChart(big) ? [peakLabel] : [barValues]),
       options: {
         responsive: true,
         maintainAspectRatio: false,
@@ -414,6 +443,10 @@
       if (modalChart) { modalChart.destroy(); modalChart = new Chart(modalCanvas, config(metric, true)); }
     };
     if (mq.addEventListener) { mq.addEventListener('change', onScheme); } else if (mq.addListener) { mq.addListener(onScheme); }
+  }
+  // Crossing the phone breakpoint (rotation, window resize) switches the card chart layout
+  if (narrowMq) {
+    if (narrowMq.addEventListener) { narrowMq.addEventListener('change', render); } else if (narrowMq.addListener) { narrowMq.addListener(render); }
   }
 
   render();

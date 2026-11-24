@@ -75,8 +75,77 @@ function is_logged_in() {
 
 function require_login() {
     if (!is_logged_in()) {
+        $isPost = isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] === 'POST';
+        $_SESSION['return_to'] = $isPost ? interrupted_post_url() : current_page_url();
+        if ($isPost || !empty($GLOBALS['sessionExpired'])) {
+            flash('info', 'หมดเวลาใช้งาน กรุณาเข้าสู่ระบบอีกครั้ง');
+        }
         redirect('login.php');
     }
+}
+
+// ---------- Coming back after an interruption (session timeout, stale CSRF token) ----------
+
+/** Pages whose POST can be put back into the form so nothing typed is lost */
+function resumable_pages() {
+    return array('sale_form.php', 'season_form.php');
+}
+
+/** This request's page as a local GET URL, e.g. "sale_form.php?id=3" */
+function current_page_url() {
+    $page = basename(isset($_SERVER['SCRIPT_NAME']) ? (string)$_SERVER['SCRIPT_NAME'] : 'index.php');
+    $qs = isset($_SERVER['QUERY_STRING']) ? (string)$_SERVER['QUERY_STRING'] : '';
+    return $qs !== '' ? $page . '?' . $qs : $page;
+}
+
+/** Only one of our own pages ("name.php?query") — never another host, never login/logout */
+function is_safe_return_url($u) {
+    return is_string($u) && preg_match('/^[a-z_]+\.php(\?[^\s#]*)?$/', $u) === 1
+        && strpos($u, 'login.php') !== 0 && strpos($u, 'logout.php') !== 0;
+}
+
+/** False when the browser reports (Origin/Referer) that the request came from another site */
+function same_origin_request() {
+    $from = isset($_SERVER['HTTP_ORIGIN']) ? (string)$_SERVER['HTTP_ORIGIN']
+        : (isset($_SERVER['HTTP_REFERER']) ? (string)$_SERVER['HTTP_REFERER'] : '');
+    if ($from === '') {
+        return true;
+    }
+    $host = parse_url($from, PHP_URL_HOST);
+    $port = parse_url($from, PHP_URL_PORT);
+    $here = isset($_SERVER['HTTP_HOST']) ? strtolower((string)$_SERVER['HTTP_HOST']) : '';
+    return $host !== null && $host !== false && strtolower($host . ($port ? ':' . $port : '')) === $here;
+}
+
+/**
+ * A POST that couldn't be processed. For the add/edit forms, keep what was typed
+ * (scalar fields only, never the CSRF token) so the form can show it again —
+ * shown only, never saved without the user pressing save. Returns the page to go back to.
+ */
+function interrupted_post_url() {
+    $page = basename(isset($_SERVER['SCRIPT_NAME']) ? (string)$_SERVER['SCRIPT_NAME'] : '');
+    if (in_array($page, resumable_pages(), true) && same_origin_request()) {
+        $post = array();
+        foreach ($_POST as $k => $v) {
+            if ($k !== 'csrf' && is_string($v)) {
+                $post[(string)$k] = substr($v, 0, 200);
+            }
+        }
+        $_SESSION['resume'] = array('url' => current_page_url(), 'post' => $post);
+        return current_page_url();
+    }
+    $postOnly = array('sale_delete.php' => 'sales.php', 'season_delete.php' => 'seasons.php');
+    return isset($postOnly[$page]) ? $postOnly[$page] : current_page_url();
+}
+
+/** Values kept by interrupted_post_url() for this page, or null. One use. */
+function resume_take() {
+    if (empty($_SESSION['resume']) || $_SESSION['resume']['url'] !== current_page_url()) {
+        return null;
+    }
+    $post = $_SESSION['resume']['post'];
+    unset($_SESSION['resume']);
+    return $post;
 }
 
 function require_post() {
@@ -186,6 +255,7 @@ if (!empty($_SESSION['auth']) && isset($_SESSION['last_seen'])
     && time() - $_SESSION['last_seen'] > SESSION_IDLE_SECONDS) {
     $_SESSION = array();
     session_regenerate_id(true);
+    $sessionExpired = true; // require_login() tells the user why they are on the login page
 }
 $_SESSION['last_seen'] = time();
 

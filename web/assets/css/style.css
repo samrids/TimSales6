@@ -70,9 +70,6 @@
     --shadow-sm: none;
     --selected-ring: #627269;  /* 3.1:1 on surface-2 */
   }
-  .season-switch select {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%238A9A93' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
-  }
 }
 
 /* ---------- Base ---------- */
@@ -89,7 +86,6 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 a { color: var(--brand); text-decoration: none; }
-a:hover { text-decoration: underline; }
 code { background: var(--surface-2); padding: 1px 6px; border-radius: 6px; font-size: .88em; }
 h1, h2, h3 { margin: 0; line-height: 1.4; }
 small { font-size: .8em; }
@@ -117,7 +113,6 @@ small { font-size: .8em; }
   display: flex; align-items: center; gap: 8px; padding: 0 12px;
 }
 .brand { display: inline-flex; align-items: center; gap: 10px; color: var(--text); font-weight: 700; font-size: 1.05rem; margin-right: auto; }
-.brand:hover { text-decoration: none; }
 .brand-mark {
   width: 32px; height: 32px; border-radius: 10px;
   display: grid; place-items: center;
@@ -129,12 +124,10 @@ small { font-size: .8em; }
   width: 44px; height: 44px; border-radius: 12px; border: 0;
   background: transparent; color: var(--text-2); cursor: pointer;
 }
-.icon-btn:hover { background: var(--surface-2); color: var(--text); text-decoration: none; }
 .icon-btn[aria-pressed="true"] { background: var(--brand-soft); color: var(--brand-ink); }
 
 .nav-desktop { display: none; gap: 4px; margin-right: 8px; }
 .nav-desktop a { color: var(--text-2); padding: 7px 12px; border-radius: 10px; font-weight: 500; font-size: .95rem; }
-.nav-desktop a:hover { background: var(--surface-2); color: var(--text); text-decoration: none; }
 .nav-desktop a.active { background: var(--brand-soft); color: var(--brand-ink); }
 
 /* ---------- Bottom tab bar (mobile) ---------- */
@@ -149,7 +142,6 @@ small { font-size: .8em; }
   display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
   color: var(--text-3); font-size: .8rem; font-weight: 500;
 }
-.tabbar a:hover { text-decoration: none; color: var(--text-2); }
 .tabbar a.active { color: var(--brand); }
 .tabbar a.active .icon { stroke-width: 2.4; }
 
@@ -171,14 +163,19 @@ small { font-size: .8em; }
 .link-more { display: inline-flex; align-items: center; gap: 2px; font-size: .9rem; font-weight: 500; }
 
 /* ---------- Season switcher ---------- */
-.season-switch { display: flex; gap: 8px; align-items: center; }
-.season-switch select {
-  appearance: none; -webkit-appearance: none;
-  font: inherit; font-size: 1.2rem; font-weight: 700; color: var(--text);
-  background: transparent url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%2364706C' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") no-repeat right 4px center;
-  border: 0; border-radius: 10px; padding: 8px 30px 8px 6px; min-height: 44px; margin-left: -6px; cursor: pointer;
+.season-title { margin: 0; font-size: 1.5rem; font-weight: 700; letter-spacing: -.01em; line-height: 1.35; }
+.season-tabs { width: 100%; }
+.season-tabs ul {
+  position: relative; list-style: none; margin: 0 -16px; padding: 2px 16px 4px;
+  display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; -webkit-overflow-scrolling: touch;
 }
-.season-switch select:hover { background-color: var(--surface-2); }
+.season-tabs ul::-webkit-scrollbar { display: none; }
+.season-tabs a {
+  display: inline-flex; align-items: center; min-height: 44px; padding: 0 16px; border-radius: 999px;
+  border: 1px solid var(--line-strong); background: var(--surface); color: var(--text-2);
+  font-weight: 500; font-size: .95rem; white-space: nowrap; font-variant-numeric: tabular-nums;
+}
+.season-tabs a[aria-current="page"] { background: var(--brand-soft); border-color: var(--brand); color: var(--brand-ink); font-weight: 600; }
 .season-meta { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin: 0; color: var(--text-2); font-size: .9rem; width: 100%; }
 
 .chip { display: inline-flex; align-items: center; gap: 6px; padding: 2px 10px; border-radius: 999px; font-size: .8rem; font-weight: 600; white-space: nowrap; }
@@ -241,7 +238,6 @@ small { font-size: .8em; }
   display: flex; align-items: center; gap: 14px; padding: 12px 6px; margin: 0 -6px;
   color: var(--text); border-radius: 12px;
 }
-.sale-row:hover { text-decoration: none; background: var(--surface-2); }
 .date-block {
   flex: none; width: 46px; height: 46px; border-radius: 12px; background: var(--surface-2);
   display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1.25;
@@ -270,7 +266,6 @@ small { font-size: .8em; }
 /* ---------- Seasons ---------- */
 .season-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
 .season-card { display: block; color: var(--text); margin: 0; transition: border-color .15s; }
-.season-card:hover { text-decoration: none; border-color: var(--line-strong); }
 .season-card-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
 .season-card-head h2 { font-size: 1.1rem; font-weight: 700; }
 .season-card-range { display: flex; align-items: center; gap: 6px; color: var(--text-2); font-size: .9rem; margin: 6px 0 12px; }
@@ -283,15 +278,11 @@ small { font-size: .8em; }
   border: 1px solid transparent; border-radius: 12px; padding: 10px 18px; min-height: 48px;
   font: inherit; font-weight: 600; cursor: pointer; text-decoration: none; white-space: nowrap;
 }
-.btn:hover { text-decoration: none; }
 .btn:active { transform: translateY(1px); }
 .btn:disabled { opacity: .6; cursor: progress; }
 .btn-primary { background: var(--brand); color: var(--on-brand); }
-.btn-primary:hover { background: var(--brand-hover); }
 .btn-quiet { background: var(--surface); color: var(--text); border-color: var(--line-strong); }
-.btn-quiet:hover { background: var(--surface-2); }
 .btn-danger-quiet { background: transparent; color: var(--danger); }
-.btn-danger-quiet:hover { background: var(--danger-soft); }
 .btn-sm { min-height: 44px; padding: 6px 12px; font-size: .9rem; border-radius: 10px; }
 .btn-block { display: flex; width: 100%; }
 
@@ -303,7 +294,6 @@ small { font-size: .8em; }
   box-shadow: 0 6px 20px rgba(4, 120, 87, .32);
   box-shadow: 0 6px 20px color-mix(in srgb, var(--brand) 32%, transparent);
 }
-.fab:hover { background: var(--brand-hover); text-decoration: none; }
 .has-tabbar .fab { bottom: calc(var(--tabbar-h) + 16px + env(safe-area-inset-bottom)); }
 .fab-label { display: none; }
 
@@ -314,6 +304,15 @@ small { font-size: .8em; }
 .field-hint { margin: 6px 0 0; color: var(--text-3); font-size: .85rem; min-height: 1.3em; }
 .field-hint.is-warn { color: var(--warn); }
 .field-hint.is-ok { color: var(--brand-ink); }
+.field-error { display: flex; align-items: flex-start; gap: 6px; margin: 6px 0 0; color: var(--danger); font-size: .875rem; font-weight: 500; }
+.field-error .icon { margin-top: 3px; }
+input[aria-invalid="true"] { border-color: var(--danger); }
+.suggest-chip {
+  display: inline-flex; align-items: center; gap: 6px; margin-top: 8px; min-height: 44px; padding: 0 14px;
+  border: 1px dashed var(--brand); border-radius: 999px; background: transparent; color: var(--brand-ink);
+  font: inherit; font-size: .9rem; font-weight: 500; cursor: pointer;
+}
+.suggest-chip small { color: var(--text-2); font-weight: 400; }
 input[type=text], input[type=date], input[type=password], select.input {
   width: 100%; font: inherit; color: var(--text);
   padding: 10px 14px; min-height: 48px;
@@ -340,7 +339,6 @@ input:focus, select.input:focus { outline: 2px solid var(--brand); outline-offse
   position: relative; display: flex; align-items: center; gap: 10px;
   border: 1.5px dashed var(--input-border); border-radius: 14px; padding: 16px; color: var(--text-2); cursor: pointer;
 }
-.file-drop:hover { border-color: var(--brand); color: var(--text); }
 .file-drop:focus-within { outline: 2px solid var(--brand); outline-offset: 2px; }
 .file-drop input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
 .file-drop.has-file { border-style: solid; border-color: var(--brand); color: var(--text); }
@@ -348,7 +346,6 @@ input:focus, select.input:focus { outline: 2px solid var(--brand); outline-offse
 .action-list { list-style: none; margin: 0; padding: 0; }
 .action-list li + li a { border-top: 1px solid var(--line); }
 .action-list a { display: flex; align-items: center; gap: 14px; padding: 12px 4px; color: var(--text); }
-.action-list a:hover { text-decoration: none; background: var(--surface-2); border-radius: 10px; }
 .action-list a > .icon:first-child { color: var(--brand); }
 .action-list a > .icon:last-child { color: var(--text-3); }
 .action-list span { flex: 1; display: flex; flex-direction: column; }
@@ -391,6 +388,30 @@ input:focus, select.input:focus { outline: 2px solid var(--brand); outline-offse
   height: 100%; max-height: 720px; padding: 16px; display: flex; flex-direction: column;
 }
 .modal-chart { position: relative; flex: 1; min-height: 0; }
+
+/* ---------- Hover (mouse/trackpad only; on touch a tap would leave it stuck) ---------- */
+@media (hover: hover) {
+  a:hover { text-decoration: underline; }
+  .brand:hover { text-decoration: none; }
+  .icon-btn:hover { background: var(--surface-2); color: var(--text); text-decoration: none; }
+  .nav-desktop a:hover { background: var(--surface-2); color: var(--text); text-decoration: none; }
+  .tabbar a:hover { text-decoration: none; color: var(--text-2); }
+  .sale-row:hover { text-decoration: none; background: var(--surface-2); }
+  .season-card:hover { text-decoration: none; border-color: var(--line-strong); }
+  .btn:hover { text-decoration: none; }
+  .btn-primary:hover { background: var(--brand-hover); }
+  .btn-quiet:hover { background: var(--surface-2); }
+  .btn-danger-quiet:hover { background: var(--danger-soft); }
+  .fab:hover { background: var(--brand-hover); text-decoration: none; }
+  .file-drop:hover { border-color: var(--brand); color: var(--text); }
+  .action-list a:hover { text-decoration: none; background: var(--surface-2); border-radius: 10px; }
+  .season-tabs a:hover { text-decoration: none; border-color: var(--brand); color: var(--text); }
+  /* selected states keep their look under the pointer */
+  .icon-btn[aria-pressed="true"]:hover { background: var(--brand-soft); color: var(--brand-ink); }
+  .nav-desktop a.active:hover { background: var(--brand-soft); color: var(--brand-ink); }
+  .tabbar a.active:hover { color: var(--brand); }
+  .season-tabs a[aria-current="page"]:hover { color: var(--brand-ink); }
+}
 
 /* ---------- Wider screens ---------- */
 @media (max-width: 480px) {

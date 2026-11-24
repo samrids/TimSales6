@@ -45,21 +45,11 @@ $fabLabel = 'เพิ่มยอดขาย';
 require APP_DIR . '/views/header.php';
 ?>
 <section class="page-head">
-  <form method="get" action="sales.php" class="season-switch">
-    <label for="season" class="sr-only">รอบการขาย</label>
-    <select id="season" name="season" data-autosubmit>
-      <?php foreach ($seasons as $s): ?>
-        <option value="<?php echo h($s->code()); ?>"<?php echo ($season !== null && $s->code() === $season->code()) ? ' selected' : ''; ?>><?php echo h($s->label()); ?></option>
-      <?php endforeach; ?>
-      <?php if (!empty($orphans) || $showOrphans): ?>
-        <option value="none"<?php echo $showOrphans ? ' selected' : ''; ?>>ไม่อยู่ในรอบใด (<?php echo count($orphans); ?>)</option>
-      <?php endif; ?>
-    </select>
-    <noscript><button type="submit" class="btn btn-quiet">แสดง</button></noscript>
-  </form>
+  <p class="season-title"><?php echo $showOrphans ? 'ไม่อยู่ในรอบใด' : ($season !== null ? h($season->label()) : 'ทั้งหมด'); ?></p>
   <a class="btn btn-quiet btn-sm" href="<?php echo h(url('export.php', array('type' => 'sales', 'season' => $showOrphans ? 'none' : ($season !== null ? $season->code() : null)))); ?>">
     <?php echo icon('download', 16); ?> CSV
   </a>
+  <?php echo season_tabs($seasons, $season, 'sales.php', count($orphans), $showOrphans); ?>
 </section>
 
 <?php if (!empty($orphans) && !$showOrphans): ?>

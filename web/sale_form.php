@@ -5,9 +5,12 @@ require __DIR__ . '/app/bootstrap.php';
 
 $id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 $isEdit = $id > 0;
-$error = null;
+$error = null;      // page-level problem (load/save failed)
+$errors = array();  // field => message, shown under each input
 $record = null;
 $seasons = array();
+$lastPrice = null;
+$resumed = false;
 
 // Form values (strings, so the user's input is redisplayed as typed)
 $form = array('saleDate' => date('Y-m-d'), 'kg' => '', 'unitPrice' => '');
@@ -25,9 +28,22 @@ try {
             'kg' => input_number($record['kg']),
             'unitPrice' => input_number($record['unitPrice']),
         );
+    } else {
+        $lastPrice = sales_repo()->latestPrice();
     }
 } catch (Exception $e) {
     $error = error_message('ไม่สามารถโหลดข้อมูลได้', $e);
+}
+
+// Back after a session timeout / stale page: put the typed values back (not saved yet)
+$kept = $_SERVER['REQUEST_METHOD'] === 'GET' ? resume_take() : null;
+if ($kept !== null && $error === null) {
+    foreach (array_keys($form) as $k) {
+        if (isset($kept[$k])) {
+            $form[$k] = trim($kept[$k]);
+        }
+    }
+    $resumed = true;
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && $error === null) {
@@ -38,9 +54,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $error === null) {
         'unitPrice' => isset($_POST['unitPrice']) ? trim((string)$_POST['unitPrice']) : '',
     );
     $v = validate_sale($form['saleDate'], $form['kg'], $form['unitPrice']);
-    $error = $v['error'];
+    $errors = $v['errors'];
 
-    if ($error === null) {
+    if (!$errors) {
         try {
             if ($isEdit) {
                 sales_repo()->update($id, $v['saleDate'], $v['kg'], $v['unitPrice']);
@@ -71,30 +87,42 @@ $backUrl = sales_list_url();
 require APP_DIR . '/views/header.php';
 ?>
 <?php if ($error !== null): ?>
-  <div class="alert alert-error"><?php echo icon('alert', 18); ?><span><?php echo h($error); ?></span></div>
+  <div class="alert alert-error" role="alert"><?php echo icon('alert', 18); ?><span><?php echo h($error); ?></span></div>
+<?php endif; ?>
+<?php if ($resumed): ?>
+  <div class="alert alert-info"><?php echo icon('info', 18); ?><span>ข้อมูลที่กรอกไว้ยังอยู่ ตรวจสอบแล้วกดบันทึกอีกครั้ง</span></div>
 <?php endif; ?>
 
 <form method="post" action="<?php echo h(url('sale_form.php', array('id' => $isEdit ? $id : null))); ?>" class="card form" data-sale-form novalidate>
   <?php echo csrf_field(); ?>
   <div class="field">
     <label class="field-label" for="saleDate">วันที่ขาย</label>
-    <input type="date" id="saleDate" name="saleDate" value="<?php echo h($form['saleDate']); ?>" required>
-    <p class="field-hint" data-season-hint aria-live="polite"></p>
+    <input type="date" id="saleDate" name="saleDate" value="<?php echo h($form['saleDate']); ?>" required<?php echo field_attrs($errors, 'saleDate', 'saleDate-hint'); ?>>
+    <?php echo field_error($errors, 'saleDate'); ?>
+    <p class="field-hint" id="saleDate-hint" data-season-hint aria-live="polite"></p>
   </div>
   <div class="field-row">
     <div class="field">
-      <label class="field-label" for="kg">น้ำหนัก</label>
+      <label class="field-label" for="kg">น้ำหนัก<span class="sr-only"> (กก.)</span></label>
       <div class="input-affix">
-        <input type="text" id="kg" name="kg" inputmode="decimal" placeholder="0" value="<?php echo h($form['kg']); ?>" required autocomplete="off">
-        <span>กก.</span>
+        <input type="text" id="kg" name="kg" inputmode="decimal" placeholder="0" value="<?php echo h($form['kg']); ?>" required autocomplete="off"<?php echo field_attrs($errors, 'kg'); ?>>
+        <span aria-hidden="true">กก.</span>
       </div>
+      <?php echo field_error($errors, 'kg'); ?>
     </div>
     <div class="field">
-      <label class="field-label" for="unitPrice">ราคาต่อกิโลกรัม</label>
+      <label class="field-label" for="unitPrice">ราคาต่อกิโลกรัม<span class="sr-only"> (บาท)</span></label>
       <div class="input-affix">
-        <input type="text" id="unitPrice" name="unitPrice" inputmode="decimal" placeholder="0.00" value="<?php echo h($form['unitPrice']); ?>" required autocomplete="off">
-        <span>บาท</span>
+        <input type="text" id="unitPrice" name="unitPrice" inputmode="decimal" placeholder="0.00" value="<?php echo h($form['unitPrice']); ?>" required autocomplete="off"<?php echo field_attrs($errors, 'unitPrice'); ?>>
+        <span aria-hidden="true">บาท</span>
       </div>
+      <?php echo field_error($errors, 'unitPrice'); ?>
+      <?php if ($lastPrice !== null): ?>
+        <?php /* A suggestion to tap, not a prefill: prices change day to day and a prefilled value gets saved unchecked */ ?>
+        <button type="button" class="suggest-chip" data-fill-price="<?php echo h(input_number($lastPrice['unitPrice'])); ?>" hidden>
+          ใช้ราคาล่าสุด <?php echo h(fmt_number($lastPrice['unitPrice'])); ?> <small>(<?php echo h(fmt_date_th($lastPrice['saleDate'])); ?>)</small>
+        </button>
+      <?php endif; ?>
     </div>
   </div>
   <div class="total-box">

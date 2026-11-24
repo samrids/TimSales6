@@ -56,7 +56,7 @@ $navItems = array(
 <main class="container">
 <?php foreach (flash_take() as $f): ?>
   <div class="alert alert-<?php echo h($f['type']); ?>" role="status">
-    <?php echo icon($f['type'] === 'error' ? 'alert' : 'check', 18); ?>
+    <?php echo icon($f['type'] === 'error' ? 'alert' : ($f['type'] === 'info' ? 'info' : 'check'), 18); ?>
     <span><?php echo h($f['message']); ?></span>
   </div>
 <?php endforeach; ?>
