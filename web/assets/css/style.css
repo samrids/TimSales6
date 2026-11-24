@@ -263,6 +263,9 @@ small { font-size: .8em; }
 .month-head span { color: var(--text-2); font-size: .85rem; }
 .month-head strong { color: var(--text); }
 .month-group .sale-list li:first-child .sale-row { border-top: 0; }
+/* the row just saved (sales.php#sale-<id>): clear of the sticky bars, highlighted */
+.sale-list li { scroll-margin-top: 72px; scroll-margin-bottom: calc(var(--tabbar-h) + 96px); }
+.sale-list li:target .sale-row { background: var(--brand-soft); box-shadow: inset 3px 0 0 var(--brand); }
 
 /* ---------- Seasons ---------- */
 .season-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }

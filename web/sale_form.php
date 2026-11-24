@@ -44,12 +44,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $error === null) {
         try {
             if ($isEdit) {
                 sales_repo()->update($id, $v['saleDate'], $v['kg'], $v['unitPrice']);
+                $savedId = $id;
                 flash('success', 'แก้ไขข้อมูลเรียบร้อยแล้ว');
             } else {
-                sales_repo()->create($v['saleDate'], $v['kg'], $v['unitPrice']);
+                $savedId = sales_repo()->create($v['saleDate'], $v['kg'], $v['unitPrice']);
                 flash('success', 'บันทึกข้อมูลเรียบร้อยแล้ว');
             }
-            redirect(sales_list_url());
+            // Land on the season the sale actually counts toward, not the one last viewed
+            $saved = sales_repo()->find($savedId);
+            redirect($saved !== null ? sale_list_url_for($saved) : sales_list_url());
         } catch (Exception $e) {
             $error = error_message('เกิดข้อผิดพลาด', $e);
         }

@@ -104,19 +104,52 @@ function sales_repo() {
 
 /**
  * Pick the season to show: ?season=<code> if valid, else the one remembered
- * in the session, else the newest. Remembers the choice for other pages.
+ * in the session, else default_season(). Remembers the choice for other pages.
  */
 function pick_season($seasons) {
     $wanted = isset($_GET['season']) ? (string)$_GET['season']
         : (isset($_SESSION['season']) ? $_SESSION['season'] : '');
     $season = $wanted !== '' ? SeasonRepository::findByCode($seasons, $wanted) : null;
-    if ($season === null && !empty($seasons)) {
-        $season = $seasons[0];
+    if ($season === null) {
+        $season = default_season($seasons);
     }
     if ($season !== null) {
         $_SESSION['season'] = $season->code();
     }
     return $season;
+}
+
+/**
+ * Season to open when none is chosen: the one today's sales count toward
+ * (earliest start wins on overlap, same rule as the SQL), else the latest one
+ * that has already started, else the newest. Avoids landing on an empty
+ * upcoming season that was created early.
+ */
+function default_season($seasons) {
+    $today = date('Y-m-d');
+    $current = null;
+    $started = null;
+    foreach ($seasons as $s) {
+        if ($s->containsDate($today) && ($current === null || $s->startDate < $current->startDate)) {
+            $current = $s;
+        }
+        if ($s->startDate <= $today && ($started === null || $s->startDate > $started->startDate)) {
+            $started = $s;
+        }
+    }
+    if ($current !== null) {
+        return $current;
+    }
+    if ($started !== null) {
+        return $started;
+    }
+    return empty($seasons) ? null : $seasons[0];
+}
+
+/** Sales list showing one record: its own season (or the no-season list), scrolled to its row */
+function sale_list_url_for($record) {
+    $season = $record['seasonCode'] !== null ? $record['seasonCode'] : 'none';
+    return url('sales.php', array('season' => $season)) . '#sale-' . (int)$record['id'];
 }
 
 /** Sales list URL for the remembered season */

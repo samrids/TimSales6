@@ -8,7 +8,7 @@ function sale_row($r) {
     $ymd = $r['saleDate'];
     $day = (int)substr($ymd, 8, 2);
     $month = thai_month_short(substr($ymd, 5, 2));
-    return '<li><a class="sale-row" href="' . h(url('sale_form.php', array('id' => $r['id']))) . '">'
+    return '<li id="sale-' . (int)$r['id'] . '"><a class="sale-row" href="' . h(url('sale_form.php', array('id' => $r['id']))) . '">'
         . '<span class="sr-only">แก้ไขรายการ ' . h(fmt_date_th($ymd)) . ' </span>'
         . '<span class="date-block" aria-hidden="true"><span class="date-day">' . $day . '</span><span class="date-month">' . h($month) . '</span></span>'
         . '<span class="sale-main">'
