@@ -40,7 +40,6 @@
   /* chart — validated: series vs surface (dataviz validate_palette.js) */
   --series: #059669;
   --series-soft: rgba(5, 150, 105, .10);
-  --spark: #86928C;
   --grid: #EDF1EF;
   --axis: #6B7873;
   --radius: 16px;
@@ -76,7 +75,6 @@
     --info-soft: #14243A;
     --series: #12A574;
     --series-soft: rgba(18, 165, 116, .14);
-    --spark: #5E6E68;
     --grid: #212B28;
     --axis: #93A39C;
     --shadow: none;
@@ -189,7 +187,7 @@ small { font-size: .8em; }
   font-weight: 500; font-size: .95rem; white-space: nowrap; font-variant-numeric: tabular-nums;
 }
 .season-tabs a[aria-current="page"] { background: var(--brand-soft); border-color: var(--brand); color: var(--brand-ink); font-weight: 600; }
-.season-meta { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin: 0; color: var(--text-2); font-size: .9rem; width: 100%; }
+.season-meta { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin: -4px 0 12px; color: var(--text-2); font-size: .875rem; }
 
 .chip { display: inline-flex; align-items: center; gap: 6px; padding: 2px 10px; border-radius: 999px; font-size: .8rem; font-weight: 600; white-space: nowrap; }
 .chip::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
@@ -197,14 +195,8 @@ small { font-size: .8em; }
 .chip-ended { background: var(--surface-2); color: var(--text-2); }
 .chip-upcoming { background: var(--info-soft); color: var(--info); }
 
-/* ---------- Hero + stat tiles ---------- */
+/* ---------- Stat tiles ---------- */
 .stat-label { color: var(--text-2); font-size: .85rem; font-weight: 500; }
-.hero { display: grid; gap: 12px; padding: 20px; }
-.hero-value { font-size: clamp(2.25rem, 9vw, 3.25rem); font-weight: 700; letter-spacing: -.02em; line-height: 1.15; margin-top: 2px; }
-.hero-value small { font-size: .45em; font-weight: 600; color: var(--text-3); letter-spacing: 0; }
-.hero-sub { margin: 6px 0 0; color: var(--text-2); font-size: .9rem; }
-.hero-sub strong { color: var(--text); font-weight: 600; }
-.hero-spark .spark { width: 100%; height: 56px; }
 
 .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 14px; }
 .stats .card { margin-bottom: 0; }
@@ -212,12 +204,6 @@ small { font-size: .8em; }
 .stat { padding: 14px; min-width: 0; }
 .stat-value { font-size: 1.2rem; font-weight: 700; margin-top: 2px; line-height: 1.25; font-variant-numeric: tabular-nums; }
 .stat-value small { font-size: .65em; font-weight: 500; color: var(--text-3); }
-.stat .spark { width: 100%; height: 28px; margin-top: 10px; }
-.spark { display: block; overflow: visible; }
-.spark polyline, .spark path { vector-effect: non-scaling-stroke; stroke-linecap: round; stroke-linejoin: round; }
-.spark polyline { stroke: var(--spark); stroke-width: 2; }
-.spark .spark-ring { stroke: var(--surface); stroke-width: 12; }
-.spark .spark-dot { stroke: var(--series); stroke-width: 8; }
 
 /* ---------- Chart card ---------- */
 .segmented {
@@ -446,7 +432,6 @@ input:focus, select.input:focus { outline: 2px solid var(--brand); outline-offse
   .stat-label { font-size: .8rem; }
   .stat-value { font-size: 1.05rem; }
   .stat-value small { display: block; }
-  .stat .spark { margin-top: 6px; }
   /* 3 tiles: first spans the row so long totals fit on one line */
   .stats:not(.stats-2) { grid-template-columns: 1fr 1fr; }
   .stats:not(.stats-2) > :first-child { grid-column: 1 / -1; }
@@ -462,8 +447,6 @@ input:focus, select.input:focus { outline: 2px solid var(--brand); outline-offse
   .has-tabbar .fab { bottom: 28px; }
   .fab { right: 28px; bottom: 28px; padding: 0 22px 0 18px; }
   .fab-label { display: inline; }
-  .hero { grid-template-columns: 1fr 1fr; align-items: end; padding: 24px; }
-  .hero-spark .spark { height: 72px; }
   .chart-box { height: 320px; }
   .stat { padding: 16px 18px; }
   .stat-value { font-size: 1.35rem; }
@@ -474,5 +457,5 @@ input:focus, select.input:focus { outline: 2px solid var(--brand); outline-offse
   * { transition: none !important; animation: none !important; }
 }
 @media (forced-colors: active) {
-  .chip::before, .spark { forced-color-adjust: none; }
+  .chip::before { forced-color-adjust: none; }
 }

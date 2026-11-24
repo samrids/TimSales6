@@ -1,6 +1,6 @@
 <?php
 // ============================================================
-// icons.php — inline SVG line icons and KPI sparklines (no icon font,
+// icons.php — inline SVG line icons (no icon font,
 // no extra requests). Icons use currentColor, so they follow the text.
 // ============================================================
 
@@ -32,51 +32,4 @@ function icon($name, $size = 20) {
     return '<svg class="icon" width="' . (int)$size . '" height="' . (int)$size . '" viewBox="0 0 24 24" fill="none"'
         . ' stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'
         . '<path d="' . $d . '"/></svg>';
-}
-
-/**
- * Small trend line for a stat tile: past months in the muted tone, the
- * latest month as an accent dot. Nulls (no sales that month) are skipped.
- * $zeroBase anchors magnitudes at 0 (revenue, kg, count); rates such as
- * price use their own min so small changes stay visible.
- * The SVG stretches to its box (preserveAspectRatio none); strokes and the
- * dot use non-scaling strokes, so lines stay 2px and the dot stays round.
- * Returns '' when there are fewer than two points to draw.
- */
-function sparkline($values, $zeroBase = true) {
-    $pts = array();
-    foreach (array_values($values) as $i => $v) {
-        if ($v !== null) {
-            $pts[] = array($i, (float)$v);
-        }
-    }
-    $n = count($values);
-    if (count($pts) < 2 || $n < 2) {
-        return '';
-    }
-    $w = 100.0;
-    $h = 32.0;
-    $padX = 3.0;
-    $padY = 5.0;
-    $min = $pts[0][1];
-    $max = $pts[0][1];
-    foreach ($pts as $p) {
-        $min = min($min, $p[1]);
-        $max = max($max, $p[1]);
-    }
-    if ($zeroBase) {
-        $min = min($min, 0.0);
-    }
-    $span = $max - $min > 0 ? $max - $min : 1.0;
-    $coords = array();
-    foreach ($pts as $p) {
-        $x = $padX + ($w - 2 * $padX) * $p[0] / ($n - 1);
-        $y = $h - $padY - ($h - 2 * $padY) * ($p[1] - $min) / $span;
-        $coords[] = round($x, 2) . ',' . round($y, 2);
-    }
-    $last = explode(',', end($coords));
-    $dot = 'M' . $last[0] . ' ' . $last[1] . 'h0'; // zero-length path + round cap = a dot that never stretches
-    return '<svg class="spark" viewBox="0 0 100 32" preserveAspectRatio="none" aria-hidden="true">'
-        . '<polyline points="' . implode(' ', $coords) . '" fill="none"/>'
-        . '<path class="spark-ring" d="' . $dot . '"/><path class="spark-dot" d="' . $dot . '"/></svg>';
 }

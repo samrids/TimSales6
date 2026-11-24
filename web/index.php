@@ -1,5 +1,5 @@
 <?php
-// Dashboard — season picker, headline revenue, 3 stat tiles, one monthly
+// Dashboard — season picker, one summary card (revenue, kg, price, count), one monthly
 // chart with a metric switch (revenue / volume / average price) + table view,
 // and the latest sales.
 require __DIR__ . '/app/bootstrap.php';
@@ -23,21 +23,6 @@ try {
     $error = error_message('ไม่สามารถโหลดข้อมูลได้', $e);
 }
 
-// Sparkline series: months up to now only (future months would draw a fake drop to 0)
-$spark = array('revenue' => array(), 'kg' => array(), 'price' => array(), 'count' => array());
-$peak = null;
-foreach ($monthly as $p) {
-    if ($p['future']) {
-        continue;
-    }
-    $spark['revenue'][] = $p['revenue'];
-    $spark['kg'][] = $p['kg'];
-    $spark['price'][] = $p['price'];
-    $spark['count'][] = $p['count'];
-    if ($p['revenue'] > 0 && ($peak === null || $p['revenue'] > $peak['revenue'])) {
-        $peak = $p;
-    }
-}
 $recent = array_slice(array_reverse($sales), 0, 5);
 
 $pageTitle = $season !== null ? 'ภาพรวม ' . $season->label() : 'ภาพรวม';
@@ -53,43 +38,26 @@ require APP_DIR . '/views/header.php';
 <?php endif; ?>
 
 <?php if ($season !== null): ?>
-<section class="page-head">
-  <p class="season-title"><?php echo h($season->label()); ?></p>
-  <p class="season-meta"><?php echo season_chip($season); ?><span><?php echo h(season_range($season)); ?></span></p>
-  <?php echo season_tabs($seasons, $season, 'index.php'); ?>
+<?php $tabs = season_tabs($seasons, $season, 'index.php'); ?>
+<section class="list-toolbar">
+  <?php if ($tabs !== ''): ?>
+    <?php echo $tabs; /* the highlighted link is the title — no separate heading repeating it */ ?>
+  <?php else: ?>
+    <p class="season-title"><?php echo h($season->label()); ?></p>
+  <?php endif; ?>
 </section>
+<p class="season-meta"><?php echo season_chip($season); ?><span><?php echo h(season_range($season)); ?></span></p>
 
-<section class="card hero">
-  <div>
-    <div class="stat-label">ยอดขายรวม</div>
-    <div class="hero-value"><?php echo money_hero($stats['totalAmount']); ?></div>
-    <p class="hero-sub">
-      <?php if ($peak !== null): ?>
-        เดือนที่ขายได้มากที่สุด <strong><?php echo h($peak['title']); ?></strong> · <?php echo h(fmt_money($peak['revenue'])); ?>
-      <?php else: ?>
-        ยังไม่มียอดขายในรอบนี้
-      <?php endif; ?>
-    </p>
-  </div>
-  <div class="hero-spark"><?php echo sparkline($spark['revenue']); ?></div>
-</section>
-
-<section class="stats">
-  <div class="card stat">
-    <div class="stat-label">ปริมาณรวม</div>
-    <div class="stat-value"><?php echo h(fmt_trim($stats['totalKg'])); ?> <small>กก.</small></div>
-    <?php echo sparkline($spark['kg']); ?>
-  </div>
-  <div class="card stat">
-    <div class="stat-label">ราคาเฉลี่ย</div>
-    <div class="stat-value"><?php echo h(fmt_number($stats['averageUnitPrice'])); ?> <small>บาท/กก.</small></div>
-    <?php echo sparkline($spark['price'], false); ?>
-  </div>
-  <div class="card stat">
-    <div class="stat-label">จำนวนรายการ</div>
-    <div class="stat-value"><?php echo (int)$stats['recordCount']; ?> <small>รายการ</small></div>
-    <?php echo sparkline($spark['count']); ?>
-  </div>
+<section class="card list-summary">
+  <div class="stat-label">ยอดขายรวม</div>
+  <div class="list-summary-total"><?php echo money_hero($stats['totalAmount']); ?></div>
+  <p class="list-summary-sub">
+    <?php if ($stats['recordCount'] > 0): ?>
+      <?php echo h(fmt_trim($stats['totalKg'])); ?> กก. · เฉลี่ย <?php echo h(fmt_number($stats['averageUnitPrice'])); ?> บาท/กก. · <?php echo (int)$stats['recordCount']; ?> รายการ
+    <?php else: ?>
+      ยังไม่มียอดขายในรอบนี้
+    <?php endif; ?>
+  </p>
 </section>
 
 <?php if (!empty($monthly)): ?>
