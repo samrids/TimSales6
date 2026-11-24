@@ -3,19 +3,23 @@
 // ui.php — small HTML partials shared by several pages.
 // ============================================================
 
-/** One sale in a list: date block · weight and price · amount. Tapping opens the edit form. */
-function sale_row($r) {
+/**
+ * One sale in a list: date block · weight and price · amount. Tapping opens the edit form.
+ * $showMonth = false inside a month group (the group header already names the month):
+ * the date block then shows the weekday instead.
+ */
+function sale_row($r, $showMonth = true) {
     $ymd = $r['saleDate'];
     $day = (int)substr($ymd, 8, 2);
-    $month = thai_month_short(substr($ymd, 5, 2));
+    $under = $showMonth ? thai_month_short(substr($ymd, 5, 2)) : thai_weekday_short($ymd);
     return '<li id="sale-' . (int)$r['id'] . '"><a class="sale-row" href="' . h(url('sale_form.php', array('id' => $r['id']))) . '">'
         . '<span class="sr-only">แก้ไขรายการ ' . h(fmt_date_th($ymd)) . ' </span>'
-        . '<span class="date-block" aria-hidden="true"><span class="date-day">' . $day . '</span><span class="date-month">' . h($month) . '</span></span>'
+        . '<span class="date-block" aria-hidden="true"><span class="date-day">' . $day . '</span><span class="date-month">' . h($under) . '</span></span>'
         . '<span class="sale-main">'
         .   '<span class="sale-title">' . h(fmt_trim($r['kg'])) . ' กก.</span>'
-        .   '<span class="sale-sub">' . h(thai_weekday_short($ymd)) . ' · ' . h(fmt_number($r['unitPrice'])) . ' บาท/กก.</span>'
+        .   '<span class="sale-sub">' . h(fmt_number($r['unitPrice'])) . ' บาท/กก.</span>'
         . '</span>'
-        . '<span class="sale-amount">' . h(fmt_number($r['amount'])) . '<small>บาท</small></span>'
+        . '<span class="sale-amount">' . h(fmt_number($r['amount'])) . '<span class="sr-only"> บาท</span></span>'
         . '</a></li>';
 }
 

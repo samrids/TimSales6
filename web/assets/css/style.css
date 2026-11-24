@@ -246,32 +246,42 @@ small { font-size: .8em; }
 
 /* ---------- Sale rows ---------- */
 .sale-list { list-style: none; margin: 0; padding: 0; }
-.sale-list li + li .sale-row { border-top: 1px solid var(--line); }
+.sale-list li + li { border-top: 1px solid var(--line); }
 .sale-row {
   display: flex; align-items: center; gap: 14px; padding: 12px 6px; margin: 0 -6px;
   color: var(--text); border-radius: 12px;
 }
 .date-block {
-  flex: none; width: 46px; height: 46px; border-radius: 12px; background: var(--surface-2);
+  flex: none; width: 40px;
   display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1.25;
 }
 .date-day { font-weight: 700; font-size: 1.05rem; }
-.date-month { font-size: .8rem; color: var(--text-2); }
+.date-month { font-size: .8rem; color: var(--text-3); }
 .sale-main { flex: 1; min-width: 0; display: flex; flex-direction: column; }
 .sale-title { font-weight: 600; }
 .sale-sub { color: var(--text-2); font-size: .85rem; }
 .sale-amount { font-weight: 700; text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
-.sale-amount small { display: block; font-weight: 400; color: var(--text-3); font-size: .8rem; }
 
-.month-group { padding-top: 6px; padding-bottom: 6px; }
+.month-group { margin-bottom: 4px; }
+/* month = a plain heading on the page background, its sales in one card below */
 .month-head {
   display: flex; justify-content: space-between; align-items: baseline; gap: 10px; flex-wrap: wrap;
-  padding: 10px 0 8px; border-bottom: 1px solid var(--line); margin-bottom: 2px;
+  padding: 14px 4px 8px;
 }
 .month-head h2 { font-size: .95rem; font-weight: 600; }
-.month-head span { color: var(--text-2); font-size: .85rem; }
-.month-head strong { color: var(--text); }
-.month-group .sale-list li:first-child .sale-row { border-top: 0; }
+.month-head span { color: var(--text-2); font-size: .875rem; font-variant-numeric: tabular-nums; }
+.month-head strong { color: var(--text); font-weight: 600; }
+.sale-list.card { padding: 2px 14px; }
+
+/* sales page: season links + CSV in one row, then a single compact summary */
+.list-toolbar { display: flex; align-items: center; gap: 4px; margin: 0 0 12px; }
+.list-toolbar .season-tabs { flex: 1; min-width: 0; }
+.list-toolbar .season-tabs ul { margin-right: 0; padding-right: 4px; }
+.list-toolbar .season-title { flex: 1; font-size: 1.25rem; }
+.list-summary { padding: 16px 18px; margin-bottom: 6px; }
+.list-summary-total { font-size: 1.75rem; font-weight: 700; letter-spacing: -.01em; line-height: 1.25; font-variant-numeric: tabular-nums; }
+.list-summary-total small { font-size: .55em; font-weight: 600; color: var(--text-3); }
+.list-summary-sub { margin: 2px 0 0; color: var(--text-2); font-size: .9rem; }
 /* the row just saved (sales.php#sale-<id>): clear of the sticky bars, highlighted */
 .sale-list li { scroll-margin-top: 72px; scroll-margin-bottom: calc(var(--tabbar-h) + 96px); }
 .sale-list li:target .sale-row { background: var(--brand-soft); box-shadow: inset 3px 0 0 var(--brand); }
