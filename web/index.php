@@ -1,5 +1,6 @@
 <?php
-// Dashboard — season picker, one summary card (revenue, kg, price, count), one monthly
+// Dashboard — season picker; "this month" card (vs last month), a big add button and the
+// season total; one monthly
 // chart with a metric switch (revenue / volume / average price) + table view,
 // and the latest sales.
 require __DIR__ . '/app/bootstrap.php';
@@ -25,12 +26,39 @@ try {
 
 $recent = array_slice(array_reverse($sales), 0, 5);
 
+// "How am I doing now": this calendar month, or the latest month with sales once the
+// season has ended; compared with the month before it.
+$now = null;
+$prev = null;
+$nowYm = date('Y-m');
+$isCurrent = false;
+foreach ($monthly as $i => $p) {
+    if ($p['yearMonth'] === $nowYm) {
+        $now = $p;
+        $prev = $i > 0 ? $monthly[$i - 1] : null;
+        $isCurrent = true;
+        break;
+    }
+}
+if ($now === null) {
+    for ($i = count($monthly) - 1; $i >= 0; $i--) {
+        if ($monthly[$i]['count'] > 0) {
+            $now = $monthly[$i];
+            $prev = $i > 0 ? $monthly[$i - 1] : null;
+            break;
+        }
+    }
+}
+$delta = null; // percent change in revenue vs the month before
+if ($now !== null && $prev !== null && $prev['revenue'] > 0) {
+    $delta = ($now['revenue'] - $prev['revenue']) / $prev['revenue'] * 100;
+}
+
 $pageTitle = $season !== null ? 'ภาพรวม ' . $season->label() : 'ภาพรวม';
 $srHeading = true;
 $activeNav = 'dashboard';
 $useCharts = !empty($monthly);
-$fabUrl = 'sale_form.php';
-$fabLabel = 'เพิ่มยอดขาย';
+// No floating button here: the big "เพิ่มยอดขาย" button sits right under the month card
 require APP_DIR . '/views/header.php';
 ?>
 <?php if ($error !== null): ?>
@@ -46,19 +74,48 @@ require APP_DIR . '/views/header.php';
     <p class="season-title"><?php echo h($season->label()); ?></p>
   <?php endif; ?>
 </section>
-<p class="season-meta"><?php echo season_chip($season); ?><span><?php echo h(season_range($season)); ?></span></p>
-
-<section class="card list-summary">
-  <div class="stat-label">ยอดขายรวม</div>
-  <div class="list-summary-total"><?php echo money_hero($stats['totalAmount']); ?></div>
-  <p class="list-summary-sub">
-    <?php if ($stats['recordCount'] > 0): ?>
-      <?php echo h(fmt_trim($stats['totalKg'])); ?> กก. · เฉลี่ย <?php echo h(fmt_number($stats['averageUnitPrice'])); ?> บาท/กก. · <?php echo (int)$stats['recordCount']; ?> รายการ
+<div class="dash-top">
+  <section class="now-card" aria-labelledby="now-title">
+    <div class="now-head">
+      <h2 class="now-label" id="now-title"><?php echo $isCurrent ? 'เดือนนี้' : 'เดือนล่าสุด'; ?> · <?php echo h($now !== null ? $now['title'] : $season->label()); ?></h2>
+      <?php if ($delta !== null): ?>
+        <span class="delta <?php echo $delta >= 0 ? 'is-up' : 'is-down'; ?>">
+          <span aria-hidden="true"><?php echo $delta >= 0 ? '▲' : '▼'; ?></span>
+          <span class="sr-only"><?php echo $delta >= 0 ? 'เพิ่มขึ้น' : 'ลดลง'; ?></span>
+          <?php echo h(number_format(abs($delta), 0)); ?>% จากเดือนก่อน
+        </span>
+      <?php endif; ?>
+    </div>
+    <div class="now-value"><?php echo money_hero($now !== null ? $now['revenue'] : 0); ?></div>
+    <?php if ($now !== null && $now['count'] > 0): ?>
+      <dl class="now-stats">
+        <div><dt>ปริมาณ</dt><dd><?php echo h(fmt_trim($now['kg'])); ?> <small>กก.</small></dd></div>
+        <div><dt>ราคาเฉลี่ย</dt><dd><?php echo h(fmt_number($now['price'])); ?> <small>บาท/กก.</small></dd></div>
+        <div><dt>รายการ</dt><dd><?php echo (int)$now['count']; ?></dd></div>
+      </dl>
     <?php else: ?>
-      ยังไม่มียอดขายในรอบนี้
+      <p class="now-empty"><?php echo $isCurrent ? 'ยังไม่มียอดขายเดือนนี้' : 'ยังไม่มียอดขายในรอบนี้'; ?></p>
     <?php endif; ?>
-  </p>
-</section>
+  </section>
+
+  <a class="btn btn-primary btn-xl" href="sale_form.php"><?php echo icon('plus', 22); ?> เพิ่มยอดขาย</a>
+
+  <section class="season-strip" aria-label="สรุปทั้งรอบ">
+    <div class="season-strip-head">
+      <span class="season-strip-title">ทั้ง<?php echo h($season->label()); ?></span>
+      <?php echo season_chip($season); ?>
+    </div>
+    <div class="season-strip-total"><?php echo money_hero($stats['totalAmount']); ?></div>
+    <p class="season-strip-sub">
+      <?php if ($stats['recordCount'] > 0): ?>
+        <?php echo h(fmt_trim($stats['totalKg'])); ?> กก. · เฉลี่ย <?php echo h(fmt_number($stats['averageUnitPrice'])); ?> บาท/กก. · <?php echo (int)$stats['recordCount']; ?> รายการ
+      <?php else: ?>
+        ยังไม่มียอดขายในรอบนี้
+      <?php endif; ?>
+    </p>
+    <p class="season-strip-range"><?php echo h(season_range($season)); ?></p>
+  </section>
+</div>
 
 <?php if (!empty($monthly)): ?>
 <section class="card chart-card" data-chart-card>

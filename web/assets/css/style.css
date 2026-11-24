@@ -49,6 +49,14 @@
   --selected-ring: var(--line-strong);
   --font: "Noto Sans Thai", "Sarabun", "Leelawadee UI", "Thonburi", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   --tabbar-h: 64px;
+  /* dark frame: top bar + "this month" band (white / --*-ink-2 text pass ≥5.4:1) */
+  --bar-bg: #0B2A20;
+  --bar-ink: #FFFFFF;
+  --bar-ink-2: #C9DAD3;
+  --now-from: #0B2A20;
+  --now-to: #134E3A;
+  --now-ink-2: #B7E4D0;
+  --tab-on: #065F46;
 }
 @media (prefers-color-scheme: dark) {
   :root {
@@ -79,6 +87,10 @@
     --axis: #93A39C;
     --shadow: none;
     --shadow-sm: none;
+    --bar-bg: #08130F;
+    --now-from: #0E3328;
+    --now-to: #155B44;
+    --tab-on: #047857;
     --selected-ring: #627269;  /* 3.1:1 on surface-2 */
   }
 }
@@ -110,26 +122,22 @@ small { font-size: .8em; }
 /* ---------- Top bar ---------- */
 .topbar {
   position: sticky; top: 0; z-index: 20;
-  background: color-mix(in srgb, var(--bg) 88%, transparent);
-  -webkit-backdrop-filter: saturate(1.4) blur(12px);
-  backdrop-filter: saturate(1.4) blur(12px);
-  border-bottom: 1px solid var(--line);
+  background: var(--bar-bg);
   padding-top: env(safe-area-inset-top);
 }
-@supports not (background: color-mix(in srgb, red 50%, blue)) {
-  .topbar { background: var(--bg); }
-}
+.topbar :focus-visible { outline-color: #6EE7B7; }
+.topbar .icon-btn { color: var(--bar-ink-2); }
 .topbar-inner {
   max-width: 960px; margin: 0 auto; height: 56px;
   display: flex; align-items: center; gap: 8px; padding: 0 12px;
 }
-.brand { display: inline-flex; align-items: center; gap: 10px; color: var(--text); font-weight: 700; font-size: 1.05rem; margin-right: auto; }
+.brand { display: inline-flex; align-items: center; gap: 10px; color: var(--bar-ink); font-weight: 700; font-size: 1.05rem; margin-right: auto; }
 .brand-mark {
   width: 32px; height: 32px; border-radius: 10px;
   display: grid; place-items: center;
-  background: var(--brand); color: var(--on-brand);
+  background: #34D399; color: #04231A;
 }
-.topbar-title { flex: 1; font-size: 1.05rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.topbar-title { flex: 1; color: var(--bar-ink); font-size: 1.05rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .icon-btn {
   display: inline-grid; place-items: center; flex: none;
   width: 44px; height: 44px; border-radius: 12px; border: 0;
@@ -138,8 +146,8 @@ small { font-size: .8em; }
 .icon-btn[aria-pressed="true"] { background: var(--brand-soft); color: var(--brand-ink); }
 
 .nav-desktop { display: none; gap: 4px; margin-right: 8px; }
-.nav-desktop a { color: var(--text-2); padding: 7px 12px; border-radius: 10px; font-weight: 500; font-size: .95rem; }
-.nav-desktop a.active { background: var(--brand-soft); color: var(--brand-ink); }
+.nav-desktop a { color: var(--bar-ink-2); padding: 7px 12px; border-radius: 10px; font-weight: 500; font-size: .95rem; }
+.nav-desktop a.active { background: rgba(255, 255, 255, .12); color: var(--bar-ink); }
 
 /* ---------- Bottom tab bar (mobile) ---------- */
 .tabbar {
@@ -168,7 +176,7 @@ small { font-size: .8em; }
   box-shadow: var(--shadow); padding: 18px; margin-bottom: 14px;
 }
 .card-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
-.card-title { font-size: 1.02rem; font-weight: 600; }
+.card-title { font-size: 1.1rem; font-weight: 700; }
 .card-sub { margin: 2px 0 0; color: var(--text-3); font-size: .85rem; }
 .card-tools { display: flex; gap: 6px; margin: -8px -8px 0 0; }
 .link-more { display: inline-flex; align-items: center; gap: 2px; font-size: .9rem; font-weight: 500; }
@@ -184,10 +192,9 @@ small { font-size: .8em; }
 .season-tabs a {
   display: inline-flex; align-items: center; min-height: 44px; padding: 0 16px; border-radius: 999px;
   border: 1px solid var(--line-strong); background: var(--surface); color: var(--text-2);
-  font-weight: 500; font-size: .95rem; white-space: nowrap; font-variant-numeric: tabular-nums;
+  font-weight: 600; font-size: .95rem; white-space: nowrap; font-variant-numeric: tabular-nums;
 }
-.season-tabs a[aria-current="page"] { background: var(--brand-soft); border-color: var(--brand); color: var(--brand-ink); font-weight: 600; }
-.season-meta { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin: -4px 0 12px; color: var(--text-2); font-size: .875rem; }
+.season-tabs a[aria-current="page"] { background: var(--tab-on); border-color: var(--tab-on); color: #FFFFFF; }
 
 .chip { display: inline-flex; align-items: center; gap: 6px; padding: 2px 10px; border-radius: 999px; font-size: .8rem; font-weight: 600; white-space: nowrap; }
 .chip::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
@@ -234,29 +241,31 @@ small { font-size: .8em; }
 .sale-list { list-style: none; margin: 0; padding: 0; }
 .sale-list li + li { border-top: 1px solid var(--line); }
 .sale-row {
-  display: flex; align-items: center; gap: 14px; padding: 12px 6px; margin: 0 -6px;
+  display: flex; align-items: center; gap: 14px; padding: 10px 6px; margin: 0 -6px;
   color: var(--text); border-radius: 12px;
 }
 .date-block {
   flex: none; width: 40px;
   display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1.25;
 }
-.date-day { font-weight: 700; font-size: 1.05rem; }
+.date-day { font-weight: 800; font-size: 1.15rem; }
 .date-month { font-size: .8rem; color: var(--text-3); }
 .sale-main { flex: 1; min-width: 0; display: flex; flex-direction: column; }
 .sale-title { font-weight: 600; }
 .sale-sub { color: var(--text-2); font-size: .85rem; }
-.sale-amount { font-weight: 700; text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.sale-amount { font-size: 1.02rem; font-weight: 700; text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
 
-.month-group { margin-bottom: 4px; }
-/* month = a plain heading on the page background, its sales in one card below */
+.month-group { margin-bottom: 0; }
+/* month = a heading on the page background that stays pinned under the top bar while
+   its sales scroll past, so the month and its subtotal stay in view */
 .month-head {
   display: flex; justify-content: space-between; align-items: baseline; gap: 10px; flex-wrap: wrap;
-  padding: 14px 4px 8px;
+  position: sticky; top: calc(56px + env(safe-area-inset-top)); z-index: 5;
+  background: var(--bg); margin: 0 -16px; padding: 12px 20px 8px;
 }
-.month-head h2 { font-size: .95rem; font-weight: 600; }
+.month-head h2 { font-size: 1rem; font-weight: 700; }
 .month-head span { color: var(--text-2); font-size: .875rem; font-variant-numeric: tabular-nums; }
-.month-head strong { color: var(--text); font-weight: 600; }
+.month-head strong { color: var(--text); font-weight: 700; }
 .sale-list.card { padding: 2px 14px; }
 
 /* sales page: season links + CSV in one row, then a single compact summary */
@@ -264,10 +273,40 @@ small { font-size: .8em; }
 .list-toolbar .season-tabs { flex: 1; min-width: 0; }
 .list-toolbar .season-tabs ul { margin-right: 0; padding-right: 4px; }
 .list-toolbar .season-title { flex: 1; font-size: 1.25rem; }
-.list-summary { padding: 16px 18px; margin-bottom: 6px; }
-.list-summary-total { font-size: 1.75rem; font-weight: 700; letter-spacing: -.01em; line-height: 1.25; font-variant-numeric: tabular-nums; }
-.list-summary-total small { font-size: .55em; font-weight: 600; color: var(--text-3); }
-.list-summary-sub { margin: 2px 0 0; color: var(--text-2); font-size: .9rem; }
+.list-summary { padding: 16px 18px; margin-bottom: 6px; background: linear-gradient(135deg, var(--now-from), var(--now-to)); border: 0; color: #FFFFFF; }
+.list-summary .stat-label { color: var(--now-ink-2); }
+.list-summary-total { font-size: 1.75rem; font-weight: 800; letter-spacing: -.01em; line-height: 1.25; font-variant-numeric: tabular-nums; }
+.list-summary-total small { font-size: .55em; font-weight: 600; color: var(--now-ink-2); }
+.list-summary-sub { margin: 2px 0 0; color: var(--now-ink-2); font-size: .9rem; }
+
+/* ---------- Dashboard top: this month → add a sale → season total ---------- */
+.dash-top { display: grid; gap: 12px; margin-bottom: 14px; }
+.now-card {
+  background: linear-gradient(135deg, var(--now-from), var(--now-to));
+  color: #FFFFFF; border-radius: 20px; padding: 20px;
+  box-shadow: 0 10px 30px rgba(11, 42, 32, .28);
+}
+.now-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+.now-label { font-size: .95rem; font-weight: 600; color: var(--now-ink-2); }
+.delta { display: inline-flex; align-items: center; gap: 4px; padding: 3px 10px; border-radius: 999px; font-size: .8rem; font-weight: 700; white-space: nowrap; }
+.delta.is-up { background: #34D399; color: #04231A; }
+.delta.is-down { background: #FEF3C7; color: #92400E; }
+.now-value { font-size: clamp(2.4rem, 11vw, 3.2rem); font-weight: 800; letter-spacing: -.02em; line-height: 1.15; margin: 6px 0 14px; font-variant-numeric: tabular-nums; }
+.now-value small { font-size: .45em; font-weight: 700; color: var(--now-ink-2); }
+.now-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 0; padding-top: 14px; border-top: 1px solid rgba(255, 255, 255, .2); }
+.now-stats div { min-width: 0; }
+.now-stats dt { font-size: .8rem; color: var(--now-ink-2); }
+.now-stats dd { margin: 0; font-size: 1.1rem; font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.now-stats dd small { font-size: .7em; font-weight: 500; color: var(--now-ink-2); }
+.now-empty { margin: 0; color: var(--now-ink-2); }
+.btn-xl { min-height: 58px; font-size: 1.1rem; border-radius: 16px; box-shadow: 0 6px 18px color-mix(in srgb, var(--brand) 30%, transparent); }
+.season-strip { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 16px 18px; box-shadow: var(--shadow); }
+.season-strip-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.season-strip-title { font-weight: 700; }
+.season-strip-total { font-size: 1.5rem; font-weight: 800; letter-spacing: -.01em; margin-top: 4px; font-variant-numeric: tabular-nums; }
+.season-strip-total small { font-size: .55em; font-weight: 600; color: var(--text-3); }
+.season-strip-sub { margin: 2px 0 0; color: var(--text-2); font-size: .875rem; }
+.season-strip-range { margin: 6px 0 0; color: var(--text-3); font-size: .8rem; }
 /* the row just saved (sales.php#sale-<id>): clear of the sticky bars, highlighted */
 .sale-list li { scroll-margin-top: 72px; scroll-margin-bottom: calc(var(--tabbar-h) + 96px); }
 .sale-list li:target .sale-row { background: var(--brand-soft); box-shadow: inset 3px 0 0 var(--brand); }
@@ -406,7 +445,8 @@ input:focus, select.input:focus { outline: 2px solid var(--brand); outline-offse
   a:hover { text-decoration: underline; }
   .brand:hover { text-decoration: none; }
   .icon-btn:hover { background: var(--surface-2); color: var(--text); text-decoration: none; }
-  .nav-desktop a:hover { background: var(--surface-2); color: var(--text); text-decoration: none; }
+  .topbar .icon-btn:hover { background: rgba(255, 255, 255, .10); color: var(--bar-ink); }
+  .nav-desktop a:hover { background: rgba(255, 255, 255, .10); color: var(--bar-ink); text-decoration: none; }
   .tabbar a:hover { text-decoration: none; color: var(--text-2); }
   .sale-row:hover { text-decoration: none; background: var(--surface-2); }
   .season-card:hover { text-decoration: none; border-color: var(--line-strong); }
@@ -420,9 +460,9 @@ input:focus, select.input:focus { outline: 2px solid var(--brand); outline-offse
   .season-tabs a:hover { text-decoration: none; border-color: var(--brand); color: var(--text); }
   /* selected states keep their look under the pointer */
   .icon-btn[aria-pressed="true"]:hover { background: var(--brand-soft); color: var(--brand-ink); }
-  .nav-desktop a.active:hover { background: var(--brand-soft); color: var(--brand-ink); }
+  .nav-desktop a.active:hover { background: rgba(255, 255, 255, .16); color: var(--bar-ink); }
   .tabbar a.active:hover { color: var(--brand); }
-  .season-tabs a[aria-current="page"]:hover { color: var(--brand-ink); }
+  .season-tabs a[aria-current="page"]:hover { color: #FFFFFF; }
 }
 
 /* ---------- Wider screens ---------- */
@@ -448,6 +488,11 @@ input:focus, select.input:focus { outline: 2px solid var(--brand); outline-offse
   .fab { right: 28px; bottom: 28px; padding: 0 22px 0 18px; }
   .fab-label { display: inline; }
   .chart-box { height: 320px; }
+  .dash-top { grid-template-columns: 1.35fr 1fr; grid-template-areas: "now add" "now season"; align-items: stretch; }
+  .now-card { grid-area: now; padding: 24px 26px; }
+  .dash-top .btn-xl { grid-area: add; }
+  .season-strip { grid-area: season; }
+  .month-head { margin: 0 -24px; padding: 14px 28px 8px; }
   .stat { padding: 16px 18px; }
   .stat-value { font-size: 1.35rem; }
   .season-list { grid-template-columns: 1fr 1fr; }
