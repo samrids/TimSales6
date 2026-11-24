@@ -37,12 +37,16 @@ class EditSalesActivity : BaseNetworkActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_edit_sales)
-        
+
+        // Top app bar with back navigation
+        setSupportActionBar(findViewById(R.id.toolbar))
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+
     // repository is lazy-initialized
-        
+
         // Initialize views
         initViews()
-        
+
         // Get data from intent
         getIntentData()
         
@@ -51,6 +55,11 @@ class EditSalesActivity : BaseNetworkActivity() {
         
         // Setup text change listeners for calculation
         setupCalculationListeners()
+    }
+
+    override fun onSupportNavigateUp(): Boolean {
+        finish()
+        return true
     }
 
     private fun initViews() {
@@ -149,7 +158,7 @@ class EditSalesActivity : BaseNetworkActivity() {
             val unitPrice = etUnitPrice.text.toString().toDoubleOrNull() ?: 0.0
             val amount = weight * unitPrice
             
-            tvCalculatedAmount.text = String.format("%.2f บาท", amount)
+            tvCalculatedAmount.text = String.format("%,.2f บาท", amount)
         } catch (e: Exception) {
             tvCalculatedAmount.text = "0.00 บาท"
         }

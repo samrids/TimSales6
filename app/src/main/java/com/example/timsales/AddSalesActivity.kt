@@ -36,10 +36,14 @@ class AddSalesActivity : BaseNetworkActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_sales)
-        
+
+        // Top app bar with back navigation
+        setSupportActionBar(findViewById(R.id.toolbar))
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+
     // Initialize repository (lazy) - touch to ensure initialization
     val repo = repository
-        
+
         // Initialize views
         initViews()
         
@@ -51,6 +55,11 @@ class AddSalesActivity : BaseNetworkActivity() {
         
         // Set current date as default
         setCurrentDate()
+    }
+
+    override fun onSupportNavigateUp(): Boolean {
+        finish()
+        return true
     }
 
     private fun initViews() {
@@ -131,7 +140,7 @@ class AddSalesActivity : BaseNetworkActivity() {
             val unitPrice = etUnitPrice.text.toString().toDoubleOrNull() ?: 0.0
             val amount = weight * unitPrice
             
-            tvCalculatedAmount.text = String.format("%.2f บาท", amount)
+            tvCalculatedAmount.text = String.format("%,.2f บาท", amount)
         } catch (e: Exception) {
             tvCalculatedAmount.text = "0.00 บาท"
         }

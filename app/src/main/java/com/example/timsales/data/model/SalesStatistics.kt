@@ -25,7 +25,7 @@ data class SalesStatistics(
      */
     fun getFormattedTotalKg(): String {
         return if (totalKg > 0) {
-            String.format("%.2f กก.", totalKg)
+            String.format("%,.2f กก.", totalKg)
         } else {
             "0.00 กก."
         }
@@ -36,7 +36,7 @@ data class SalesStatistics(
      */
     fun getFormattedAveragePrice(): String {
         return if (averageUnitPrice > 0) {
-            String.format("฿%.2f/กก.", averageUnitPrice)
+            String.format("฿%,.2f/กก.", averageUnitPrice)
         } else {
             "฿0.00/กก."
         }

@@ -1,0 +1,50 @@
+# Block direct web access to the .env file (password hash, API token),
+# docs and any SQLite database file. Works on Apache 2.2 and 2.4.
+# The app/ and data/ folders have their own .htaccess that denies everything.
+
+<FilesMatch "(^\.env|\.env\.example$|\.md$|\.htaccess$|\.sqlite3?$|\.sqlite-journal$|\.db$)">
+  <IfModule mod_authz_core.c>
+    # Apache 2.4+
+    Require all denied
+  </IfModule>
+  <IfModule !mod_authz_core.c>
+    # Apache 2.2
+    Order allow,deny
+    Deny from all
+  </IfModule>
+</FilesMatch>
+
+# Pass the Authorization header to PHP (CGI/FastCGI hosts drop it otherwise).
+# api.php also accepts X-Api-Key, so the API works even if this has no effect.
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteCond %{HTTP:Authorization} .
+  RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+</IfModule>
+
+DirectoryIndex index.php
+
+# Static files: CSS/JS URLs carry ?v=<mtime> (asset()) and font files have the
+# version in their name, so browsers may keep them for a year. A new deploy
+# changes the URL, so nobody gets a stale copy.
+<IfModule mod_expires.c>
+  ExpiresActive On
+  ExpiresByType text/css "access plus 1 year"
+  ExpiresByType application/javascript "access plus 1 year"
+  ExpiresByType text/javascript "access plus 1 year"
+  ExpiresByType font/woff2 "access plus 1 year"
+  ExpiresByType image/svg+xml "access plus 1 year"
+</IfModule>
+<IfModule mod_headers.c>
+  <FilesMatch "\.(css|js|woff2|svg)$">
+    Header set Cache-Control "public, max-age=31536000, immutable"
+  </FilesMatch>
+</IfModule>
+<IfModule mod_mime.c>
+  AddType font/woff2 .woff2
+</IfModule>
+
+# Compress text responses (HTML, CSS, JS, JSON, CSV). woff2 is already compressed.
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/css text/plain text/csv application/javascript text/javascript application/json image/svg+xml
+</IfModule>

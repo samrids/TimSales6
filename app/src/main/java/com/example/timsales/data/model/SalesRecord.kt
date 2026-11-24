@@ -52,9 +52,23 @@ data class SalesRecord(
     @SerializedName("kg") val kg: Double, // จำนวนกิโลกรัม
     @SerializedName("unitPrice") val unitPrice: Double, // ราคาต่อหน่วย
     @SerializedName("amount") val amount: Double = 0.0, // ยอดรวม (calculated field from Grist)
+    @SerializedName("seasonCode") val seasonCode: String? = null, // รอบการขาย (formula column from Grist เช่น "2026/27")
     @SerializedName("created_at") val createdAt: String? = null, // Flexible timestamp from server
     @SerializedName("updated_at") val updatedAt: String? = null // Flexible timestamp from server
 ) {
+    /**
+     * ดึงรหัสเดือนของรายการขายในรูปแบบ YYYY-MM สำหรับจัดกลุ่มในกราฟ
+     * คืนค่า null หากแยกวันที่ไม่ได้
+     */
+    fun getYearMonth(): String? {
+        return try {
+            // saleDate อาจอยู่ในรูป 2026-02-15, 2026-02-15T.., 2026-02-15 ..
+            val datePart = saleDate.split("T")[0].split(" ")[0]
+            if (datePart.length >= 7) datePart.substring(0, 7) else null
+        } catch (e: Exception) {
+            null
+        }
+    }
     /**
      * Format วันที่สำหรับแสดงผล
      */
@@ -83,7 +97,9 @@ data class SalesRecord(
         return try {
             val parts = dateStr.split("-")
             if (parts.size == 3) {
-                "${parts[2]}/${parts[1]}/${parts[0]}" // แปลงจาก YYYY-MM-DD เป็น DD/MM/YYYY
+                // แปลงจาก YYYY-MM-DD เป็น DD/MM/YY (ปี 2 หลัก เพื่อไม่ให้ตกบรรทัด)
+                val yy = if (parts[0].length == 4) parts[0].substring(2) else parts[0]
+                "${parts[2]}/${parts[1]}/$yy"
             } else {
                 dateStr
             }
@@ -93,24 +109,24 @@ data class SalesRecord(
     }
 
     /**
-     * Format จำนวนเงินสำหรับแสดงผล
+     * Format จำนวนเงินสำหรับแสดงผล (มีเครื่องหมายจุลภาคเมื่อครบหลักพัน เช่น 17,754.00 บาท)
      */
     fun getFormattedAmount(): String {
-        return String.format("%.2f บาท", amount)
+        return String.format("%,.2f บาท", amount)
     }
 
     /**
      * Format น้ำหนักสำหรับแสดงผล
      */
     fun getFormattedWeight(): String {
-        return String.format("%.2f กก.", kg)
+        return String.format("%,.2f กก.", kg)
     }
 
     /**
      * Format ราคาต่อหน่วยสำหรับแสดงผล
      */
     fun getFormattedUnitPrice(): String {
-        return String.format("%.2f บาท/กก.", unitPrice)
+        return String.format("%,.2f บาท/กก.", unitPrice)
     }
     
     /**

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- ===== Legacy (kept for launcher) ===== -->
     <color name="purple_200">#FFBB86FC</color>
     <color name="purple_500">#FF6200EE</color>
     <color name="purple_700">#FF3700B3</color>
@@ -7,4 +8,50 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <!-- =========================================================
+         Emerald Pro — Light tokens
+         ========================================================= -->
+
+    <!-- Brand -->
+    <color name="brand_primary">#047857</color>          <!-- emerald 700 -->
+    <color name="brand_primary_dark">#065F46</color>     <!-- toolbar / status bar -->
+    <color name="brand_on_primary">#FFFFFF</color>
+    <color name="brand_container">#A7F3D0</color>        <!-- emerald 200 -->
+    <color name="brand_on_container">#064E3B</color>
+
+    <!-- Surfaces / background -->
+    <color name="bg_app">#F1F5F4</color>
+    <color name="surface_card">#FFFFFF</color>
+    <color name="surface_elevated">#FFFFFF</color>
+    <color name="card_stroke">#E2E8E6</color>
+    <color name="divider">#ECF1EF</color>
+
+    <!-- Text -->
+    <color name="text_primary">#15241F</color>
+    <color name="text_secondary">#5B6B65</color>
+    <color name="text_tertiary">#90A099</color>
+
+    <!-- KPI accents -->
+    <color name="kpi_revenue">#059669</color>
+    <color name="kpi_revenue_bg">#D1FAE5</color>
+    <color name="kpi_volume">#0284C7</color>
+    <color name="kpi_volume_bg">#DBEAFE</color>
+    <color name="kpi_price">#D97706</color>
+    <color name="kpi_price_bg">#FEF3C7</color>
+    <color name="kpi_count">#7C3AED</color>
+    <color name="kpi_count_bg">#EDE9FE</color>
+
+    <!-- Semantic -->
+    <color name="success">#059669</color>
+    <color name="danger">#DC2626</color>
+    <color name="danger_bg">#FEE2E2</color>
+    <color name="warning">#D97706</color>
+
+    <!-- Chart -->
+    <color name="chart_bar">#10B981</color>
+    <color name="chart_line">#0284C7</color>
+    <color name="chart_fill">#0284C7</color>
+    <color name="chart_grid">#E2E8E6</color>
+    <color name="chart_axis_text">#5B6B65</color>
 </resources>

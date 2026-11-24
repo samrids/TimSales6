@@ -1,97 +1,94 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="8dp"
-    app:cardCornerRadius="8dp"
-    app:cardElevation="4dp"
+    android:layout_marginBottom="10dp"
     android:clickable="true"
     android:focusable="true"
-    android:foreground="?android:attr/selectableItemBackground">
+    app:rippleColor="@color/brand_container">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:padding="16dp">
+        android:padding="16dp"
+        android:gravity="center_vertical">
 
-        <!-- Year Icon and Info -->
+        <FrameLayout
+            android:layout_width="46dp"
+            android:layout_height="46dp"
+            android:background="@drawable/bg_circle_soft"
+            android:backgroundTint="@color/brand_container"
+            android:layout_marginEnd="14dp">
+
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_season"
+                app:tint="@color/brand_primary" />
+        </FrameLayout>
+
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:orientation="vertical">
 
-            <!-- Sale Year -->
             <TextView
                 android:id="@+id/tvSaleYear"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="ปี 2025"
-                android:textSize="20sp"
+                android:text="รอบ 2026/27"
+                android:textSize="18sp"
                 android:textStyle="bold"
-                android:textColor="#2c3e50"
-                android:layout_marginBottom="4dp"
-                android:drawableStart="@android:drawable/ic_menu_recent_history"
-                android:drawablePadding="8dp"
-                android:gravity="center_vertical" />
+                android:textColor="@color/text_primary"
+                android:layout_marginBottom="4dp" />
 
-            <!-- Created Date -->
             <TextView
                 android:id="@+id/tvCreatedDate"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="สร้าง: 01/01/2025 10:30"
-                android:textSize="12sp"
-                android:textColor="#7f8c8d"
-                android:layout_marginBottom="2dp" />
+                android:text="สร้าง: 01/01/2026 10:30"
+                android:textSize="11sp"
+                android:textColor="@color/text_tertiary" />
 
-            <!-- Updated Date -->
             <TextView
                 android:id="@+id/tvUpdatedDate"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="อัปเดต: 01/01/2025 10:30"
-                android:textSize="12sp"
-                android:textColor="#7f8c8d" />
-
+                android:text="อัปเดต: 01/01/2026 10:30"
+                android:textSize="11sp"
+                android:textColor="@color/text_tertiary"
+                android:layout_marginTop="2dp" />
         </LinearLayout>
 
-        <!-- Action Buttons -->
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_gravity="center_vertical">
+        <ImageButton
+            android:id="@+id/btnEdit"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginEnd="8dp"
+            android:background="@drawable/bg_circle_soft"
+            android:backgroundTint="@color/kpi_volume_bg"
+            android:contentDescription="แก้ไข"
+            android:src="@drawable/ic_edit_modern"
+            android:tint="@color/kpi_volume"
+            android:scaleType="centerInside"
+            android:padding="9dp" />
 
-            <!-- Edit Button -->
-            <ImageButton
-                android:id="@+id/btnEdit"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:layout_marginEnd="8dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:contentDescription="แก้ไข"
-                android:src="@android:drawable/ic_menu_edit"
-                android:tint="#3498db"
-                android:scaleType="centerInside"
-                android:padding="8dp" />
-
-            <!-- Delete Button -->
-            <ImageButton
-                android:id="@+id/btnDelete"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:contentDescription="ลบ"
-                android:src="@android:drawable/ic_menu_delete"
-                android:tint="#e74c3c"
-                android:scaleType="centerInside"
-                android:padding="8dp" />
-
-        </LinearLayout>
+        <ImageButton
+            android:id="@+id/btnDelete"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@drawable/bg_circle_soft"
+            android:backgroundTint="@color/danger_bg"
+            android:contentDescription="ลบ"
+            android:src="@drawable/ic_delete_modern"
+            android:tint="@color/danger"
+            android:scaleType="centerInside"
+            android:padding="9dp" />
 
     </LinearLayout>
 
-</androidx.cardview.widget.CardView>
+</com.google.android.material.card.MaterialCardView>
