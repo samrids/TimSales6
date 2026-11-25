@@ -49,6 +49,19 @@
     });
   });
 
+  // Success toasts: fade out after a few seconds, or right away on tap
+  each('[data-toasts] .toast', function (toast, i) {
+    var gone = false;
+    function dismiss() {
+      if (gone) { return; }
+      gone = true;
+      toast.className += ' is-out';
+      setTimeout(function () { if (toast.parentNode) { toast.parentNode.removeChild(toast); } }, 250);
+    }
+    toast.addEventListener('click', dismiss);
+    setTimeout(dismiss, 4500 + i * 1000);
+  });
+
   each('.file-drop input[type=file]', function (input) {
     var label = input.parentNode;
     var name = label.querySelector('[data-file-name]');
@@ -80,6 +93,10 @@
     }
     kg.addEventListener('input', updateTotal);
     price.addEventListener('input', updateTotal);
+    // Enter on the keypad in "kg" moves on to the price instead of saving a sale with no price
+    kg.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' || e.keyCode === 13) { e.preventDefault(); price.focus(); }
+    });
     date.addEventListener('change', updateSeason);
     date.addEventListener('input', updateSeason);
     updateTotal();

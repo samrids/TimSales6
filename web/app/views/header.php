@@ -18,15 +18,20 @@ $navItems = array(
 <html lang="th">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#F6F8F7" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#0E1412" media="(prefers-color-scheme: dark)">
+<?php /* interactive-widget: on Android the on-screen keyboard shrinks the layout, so the sticky
+         save bar on forms stays above the keyboard instead of behind it */ ?>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
+<?php /* = --bar-bg, so the phone's status bar blends into the dark top bar */ ?>
+<meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#08130F" media="(prefers-color-scheme: dark)">
 <meta name="color-scheme" content="light dark">
 <meta name="robots" content="noindex, nofollow">
 <title><?php echo h($pageTitle); ?> · TimSales</title>
 <?php /* Self-hosted font (no Google round-trip). Preload the Thai file: nearly every page is Thai text. */ ?>
 <link rel="preload" href="assets/fonts/noto-sans-thai-thai-v29.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="<?php echo h(asset('assets/css/style.css')); ?>">
+<?php /* without JS nothing dismisses the toast: show it in the page flow instead */ ?>
+<noscript><style>.toast-stack { position: static; transform: none; width: auto; margin-bottom: 14px; } .toast { animation: none; }</style></noscript>
 </head>
 <body class="<?php echo ($activeNav !== null && !$hideNav) ? 'has-tabbar' : ''; ?>">
 <header class="topbar">
@@ -53,9 +58,23 @@ $navItems = array(
   </div>
 </header>
 <main class="container">
-<?php foreach (flash_take() as $f): ?>
+<?php
+// Success → toast pinned under the top bar (still visible when the page jumps to the saved row).
+// Errors and info stay inline at the top: they explain something and shouldn't vanish.
+$flashes = flash_take();
+$toasts = array_filter($flashes, function ($f) { return $f['type'] === 'success'; });
+?>
+<?php if ($toasts): ?>
+  <div class="toast-stack" data-toasts>
+    <?php foreach ($toasts as $f): ?>
+      <div class="toast" role="status"><?php echo icon('check', 18); ?><span><?php echo h($f['message']); ?></span></div>
+    <?php endforeach; ?>
+  </div>
+<?php endif; ?>
+<?php foreach ($flashes as $f): ?>
+  <?php if ($f['type'] === 'success') { continue; } ?>
   <div class="alert alert-<?php echo h($f['type']); ?>" role="status">
-    <?php echo icon($f['type'] === 'error' ? 'alert' : ($f['type'] === 'info' ? 'info' : 'check'), 18); ?>
+    <?php echo icon($f['type'] === 'error' ? 'alert' : 'info', 18); ?>
     <span><?php echo h($f['message']); ?></span>
   </div>
 <?php endforeach; ?>
