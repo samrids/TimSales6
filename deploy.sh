@@ -45,6 +45,7 @@ readonly PROTECTED_EXCLUDES=(
     node_modules __pycache__ .venv venv vendor
     "*.log" "*.db" "*.db-journal" "*.db-wal" "*.db-shm"
     "*.sqlite" "*.sqlite3" "*.py[cod]"
+    "sess_*"
     Thumbs.db .DS_Store Desktop.ini "*.swp" "*.bak" "*.tmp"
 )
 

@@ -1,0 +1,17 @@
+{
+  "name": "TimSales",
+  "short_name": "TimSales",
+  "description": "บันทึกยอดขายสินค้าเกษตร",
+  "lang": "th",
+  "id": "./",
+  "start_url": "index.php",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#EFF3F1",
+  "theme_color": "#0B2A20",
+  "icons": [
+    { "src": "assets/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "assets/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "assets/icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

@@ -16,10 +16,11 @@ Web version of the TimSales6 app. It runs on PHP 5.6 shared hosting and keeps al
 | `seasons.php`, `season_form.php` | Seasons with start/end dates, sales count and revenue per season |
 | `data.php`, `export.php` | CSV import (sales or seasons), CSV export, SQLite backup download |
 | `api.php` | JSON API for the Android app (token auth) |
-| `login.php`, `logout.php` | Log in and out |
+| `login.php`, `logout.php` | Log in and out. A login lasts 30 days from the last visit (logout is on **ข้อมูล** on phones) |
 | `app/` | Server-side PHP (database, repositories, validation, views). Blocked by `app/.htaccess` |
-| `data/` | The SQLite file `timsales.sqlite` (created on first use). Blocked by `data/.htaccess` |
-| `assets/` | CSS, JS, Chart.js |
+| `data/` | The SQLite file `timsales.sqlite` (created on first use) and `sessions/` (login sessions). Blocked by `data/.htaccess` |
+| `assets/` | CSS, JS, Chart.js, home-screen icons |
+| `manifest.webmanifest` | Lets phones add TimSales to the home screen and open it full screen |
 | `.env` | Settings and secrets. Blocked by `.htaccess`, never uploaded by `deploy.sh` |
 
 ## Data model
@@ -47,6 +48,12 @@ Local XAMPP runs PHP 8.2, the server runs 5.6. Don't use `??`, `<=>`, type hints
 2. Open `login.php`. It shows a form for generating the hash
 3. Enter the password you want (at least 8 characters), then copy the `APP_PASSWORD_HASH=...` line into `.env`
 4. Reload and log in
+
+To log out every phone at once (lost phone), set a new password: changing `APP_PASSWORD_HASH` ends all existing logins.
+
+## Add to the home screen
+
+Needs HTTPS. Android Chrome: menu ⋮ → **Add to Home screen** / **Install app**. iPhone Safari: Share → **Add to Home Screen**. It opens full screen with the leaf icon; the login lasts 30 days, so it doesn't ask for the password each time.
 
 ## Move the data from Grist (once)
 

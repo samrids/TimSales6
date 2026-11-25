@@ -26,6 +26,7 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] === 'POST') 
     } elseif ($password !== '' && password_verify($password, $hash)) {
         session_regenerate_id(true);
         $_SESSION['auth'] = true;
+        $_SESSION['auth_fp'] = auth_fingerprint();
         $_SESSION['csrf'] = random_hex(32);
         // Back to the page the user was on when the session ran out
         $back = isset($_SESSION['return_to']) ? $_SESSION['return_to'] : '';

@@ -25,6 +25,15 @@ $navItems = array(
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#08130F" media="(prefers-color-scheme: dark)">
 <meta name="color-scheme" content="light dark">
+<?php /* Add to home screen: opens full screen with its own icon, like an app */ ?>
+<link rel="manifest" href="<?php echo h(asset('manifest.webmanifest')); ?>">
+<link rel="icon" type="image/png" sizes="192x192" href="assets/icons/icon-192.png">
+<link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="TimSales">
+<?php /* iPhone app mode: the dark top bar runs up under the status bar (it pads for the safe area) */ ?>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="robots" content="noindex, nofollow">
 <title><?php echo h($pageTitle); ?> · TimSales</title>
 <?php /* Self-hosted font (no Google round-trip). Preload the Thai file: nearly every page is Thai text. */ ?>
