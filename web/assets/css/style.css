@@ -392,6 +392,7 @@ small { font-size: .8em; }
 .has-tabbar .fab { bottom: calc(var(--tabbar-h) + 16px + env(safe-area-inset-bottom)); }
 .fab-label { display: none; }
 .fab.is-hidden { opacity: 0; transform: scale(.6); pointer-events: none; }
+.fab.is-hidden:focus-visible { opacity: 1; transform: none; pointer-events: auto; } /* keyboard focus brings it back */
 
 /* ---------- Forms ---------- */
 .form .field { margin-bottom: 16px; }
