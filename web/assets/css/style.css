@@ -160,6 +160,7 @@ small { font-size: .8em; }
 .icon-btn[aria-pressed="true"] { background: var(--brand-soft); color: var(--brand-ink); }
 
 .nav-desktop { display: none; gap: 4px; margin-right: 8px; }
+.topbar-logout { display: none; } /* phones: logout is on the data page */
 .nav-desktop a { color: var(--bar-ink-2); padding: 8px 12px; border-radius: var(--r-sm); font-weight: 500; font-size: var(--fs-md); }
 .nav-desktop a.active { background: rgba(255, 255, 255, .12); color: var(--bar-ink); }
 
@@ -376,6 +377,7 @@ small { font-size: .8em; }
 }
 .has-tabbar .fab { bottom: calc(var(--tabbar-h) + 16px + env(safe-area-inset-bottom)); }
 .fab-label { display: none; }
+.fab.is-hidden { opacity: 0; transform: scale(.6); pointer-events: none; }
 
 /* ---------- Forms ---------- */
 .form .field { margin-bottom: 16px; }
@@ -472,7 +474,9 @@ input:focus, select.input:focus { outline: 2px solid var(--brand); outline-offse
 /* ---------- Fullscreen chart modal ---------- */
 .modal {
   position: fixed; inset: 0; z-index: 50; background: rgba(8, 12, 11, .6);
-  display: flex; align-items: center; justify-content: center; padding: 12px;
+  display: flex; align-items: center; justify-content: center;
+  padding: max(12px, env(safe-area-inset-top)) max(12px, env(safe-area-inset-right))
+           max(12px, env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left));
   overscroll-behavior: contain;
 }
 .modal[hidden] { display: none; }
@@ -504,6 +508,7 @@ input:focus, select.input:focus { outline: 2px solid var(--brand); outline-offse
 /* ---------- Press feedback (touch has no hover: show the tap itself) ---------- */
 .btn, .fab, .suggest-chip, .season-tabs a { transition: transform .1s ease-out; }
 .sale-row, .action-list a, .icon-btn, .season-card { transition: background-color .15s, border-color .15s; }
+.fab { transition: transform .2s ease-out, opacity .2s; }
 .btn:active, .fab:active, .suggest-chip:active, .season-tabs a:active { transform: scale(.97); }
 .tabbar a:active .tab-icon { transform: scale(.92); }
 .sale-row:active, .season-card:active, .icon-btn:active { background: var(--surface-2); }
@@ -555,6 +560,8 @@ input:focus, select.input:focus { outline: 2px solid var(--brand); outline-offse
   .has-tabbar .container { padding-bottom: 112px; }
   .tabbar { display: none; }
   .nav-desktop { display: flex; }
+  .topbar-logout { display: inline-grid; }
+  .logout-card { display: none; }
   .has-tabbar .fab { bottom: 28px; }
   .fab { right: 28px; bottom: 28px; padding: 0 22px 0 18px; }
   .fab-label { display: inline; }

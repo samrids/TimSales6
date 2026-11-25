@@ -75,7 +75,12 @@ $pageTitle = $season !== null ? 'ภาพรวม ' . $season->label() : 'ภ�
 $srHeading = true;
 $activeNav = 'dashboard';
 $useCharts = !empty($monthly) && !$isEmpty;
-// No floating button here: the big "เพิ่มรายการขาย" button sits right under the month card
+// Floating add button: hidden while the big "เพิ่มรายการขาย" button under the month card is on
+// screen (app.js), shown once it scrolls away
+if ($season !== null && !$isEmpty) {
+    $fabUrl = 'sale_form.php';
+    $fabLabel = 'เพิ่มรายการขาย';
+}
 require APP_DIR . '/views/header.php';
 ?>
 <?php if ($error !== null): ?>
@@ -123,7 +128,7 @@ require APP_DIR . '/views/header.php';
     <?php endif; ?>
   </section>
 
-  <a class="btn btn-primary btn-xl" href="sale_form.php"><?php echo icon('plus', 22); ?> เพิ่มรายการขาย</a>
+  <a class="btn btn-primary btn-xl" href="sale_form.php" data-fab-anchor><?php echo icon('plus', 22); ?> เพิ่มรายการขาย</a>
 
   <section class="season-strip" aria-label="สรุปทั้งรอบ">
     <div class="season-strip-head">
@@ -216,7 +221,7 @@ require APP_DIR . '/views/header.php';
       <h2 class="card-title" id="chartModalTitle"></h2>
       <button type="button" class="icon-btn" data-close-modal aria-label="ปิด" title="ปิด"><?php echo icon('close', 20); ?></button>
     </div>
-    <div class="modal-chart"><canvas id="chartModalCanvas"></canvas></div>
+    <div class="modal-chart"><canvas id="chartModalCanvas" role="img"></canvas></div>
   </div>
 </div>
 <?php require APP_DIR . '/views/footer.php'; ?>

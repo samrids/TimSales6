@@ -61,7 +61,7 @@ require APP_DIR . '/views/header.php';
         </div>
         <p class="season-card-range"><?php echo icon('calendar', 16); ?> <?php echo h(season_range($s)); ?></p>
         <div class="season-card-stats">
-          <span><strong><?php echo h(fmt_number($t['amount'])); ?></strong> บาท</span>
+          <span><strong>฿<?php echo h(fmt_number($t['amount'])); ?></strong></span>
           <span><strong><?php echo (int)$t['count']; ?></strong> รายการ</span>
         </div>
       </div>

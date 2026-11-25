@@ -145,7 +145,7 @@ require APP_DIR . '/views/header.php';
     <button type="submit" class="btn btn-primary"><?php echo icon('check', 18); ?> บันทึก</button>
   </div>
   <div class="form-buttons">
-    <a class="btn btn-quiet" href="<?php echo h($backUrl); ?>">ยกเลิก</a>
+    <a class="btn btn-quiet" href="<?php echo h($backUrl); ?>" data-back>ยกเลิก</a>
     <?php if (!$isEdit): ?>
       <button type="submit" class="btn btn-quiet" name="next" value="1"><?php echo icon('plus', 18); ?> บันทึกและเพิ่มต่อ</button>
     <?php endif; ?>

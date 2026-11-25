@@ -103,6 +103,18 @@ require APP_DIR . '/views/header.php';
   </ul>
 </section>
 
+<?php /* phones: the only logout (the top-bar icon shows on wide screens only) */ ?>
+<section class="card logout-card">
+  <ul class="action-list">
+    <li>
+      <a href="logout.php">
+        <?php echo icon('logout', 20); ?>
+        <span><strong>ออกจากระบบ</strong></span>
+      </a>
+    </li>
+  </ul>
+</section>
+
 <section class="card">
   <div class="card-head"><h2 class="card-title">นำเข้าจาก CSV</h2></div>
   <p class="muted">ไฟล์ที่ส่งออกจากหน้านี้หรือจาก Grist · รายการที่มีอยู่แล้วจะถูกข้าม นำเข้าไฟล์เดิมซ้ำได้อย่างปลอดภัย</p>
@@ -123,7 +135,7 @@ require APP_DIR . '/views/header.php';
       <span data-file-name>เลือกไฟล์ .csv</span>
       <input type="file" name="csv" accept=".csv,text/csv" required>
     </label>
-    <button type="submit" class="btn btn-primary"><?php echo icon('upload', 18); ?> นำเข้า</button>
+    <button type="submit" class="btn btn-primary" data-busy-label="กำลังนำเข้า…"><?php echo icon('upload', 18); ?> นำเข้า</button>
   </form>
 </section>
 <?php require APP_DIR . '/views/footer.php'; ?>

@@ -37,7 +37,7 @@ $navItems = array(
 <header class="topbar">
   <div class="topbar-inner">
     <?php if ($backUrl !== null): ?>
-      <a class="icon-btn" href="<?php echo h($backUrl); ?>" aria-label="ย้อนกลับ"><?php echo icon('back', 22); ?></a>
+      <a class="icon-btn" href="<?php echo h($backUrl); ?>" aria-label="ย้อนกลับ" data-back><?php echo icon('back', 22); ?></a>
       <h1 class="topbar-title"><?php echo h($pageTitle); ?></h1>
     <?php else: ?>
       <a class="brand" href="index.php">
@@ -53,7 +53,7 @@ $navItems = array(
           <a href="<?php echo h($item[0]); ?>"<?php echo $key === $activeNav ? ' class="active" aria-current="page"' : ''; ?>><?php echo h($item[2]); ?></a>
         <?php endforeach; ?>
       </nav>
-      <a class="icon-btn" href="logout.php" aria-label="ออกจากระบบ" title="ออกจากระบบ"><?php echo icon('logout', 20); ?></a>
+      <a class="icon-btn topbar-logout" href="logout.php" aria-label="ออกจากระบบ" title="ออกจากระบบ"><?php echo icon('logout', 20); ?></a>
     <?php endif; ?>
   </div>
 </header>

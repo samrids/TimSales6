@@ -96,7 +96,7 @@ require APP_DIR . '/views/header.php';
   </div>
   <p class="field-hint" id="dates-hint">เปลี่ยนปีแล้ววันที่จะปรับเป็นค่าเริ่มต้น (1 ก.พ. – 31 มี.ค. ปีถัดไป) จนกว่าจะแก้วันที่เอง</p>
   <div class="form-buttons">
-    <a class="btn btn-quiet" href="seasons.php">ยกเลิก</a>
+    <a class="btn btn-quiet" href="seasons.php" data-back>ยกเลิก</a>
     <button type="submit" class="btn btn-primary"><?php echo icon('check', 18); ?> บันทึก</button>
   </div>
 </form>

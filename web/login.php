@@ -71,7 +71,7 @@ require APP_DIR . '/views/header.php';
       <input type="password" id="password" name="password" required autofocus<?php echo $error !== '' ? ' aria-invalid="true" aria-describedby="login-error"' : ''; ?>
              autocomplete="<?php echo $setupMode ? 'new-password' : 'current-password'; ?>">
     </div>
-    <button type="submit" class="btn btn-primary btn-block">
+    <button type="submit" class="btn btn-primary btn-block" data-busy-label="<?php echo $setupMode ? 'กำลังสร้าง…' : 'กำลังเข้าสู่ระบบ…'; ?>">
       <?php echo $setupMode ? 'สร้างค่า APP_PASSWORD_HASH' : 'เข้าสู่ระบบ'; ?>
     </button>
   </form>

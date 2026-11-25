@@ -86,7 +86,7 @@ $csvUrl = url('export.php', array('type' => 'sales', 'season' => $showOrphans ? 
     <section class="month-group">
       <header class="month-head">
         <h2><?php echo h($g['title']); ?></h2>
-        <span><?php echo count($g['rows']); ?> รายการ · <strong><?php echo h(fmt_number($g['amount'])); ?></strong></span>
+        <span><?php echo count($g['rows']); ?> รายการ · <strong><?php echo h(fmt_number($g['amount'])); ?><span class="sr-only"> บาท</span></strong></span>
       </header>
       <ul class="sale-list card">
         <?php foreach ($g['rows'] as $r) { echo sale_row($r, false); } ?>
