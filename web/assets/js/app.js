@@ -93,16 +93,43 @@
     });
   });
 
-  // Dashboard: the floating add button only once the big add button has scrolled out of view
-  var fabAnchor = $('[data-fab-anchor]'), fab = $('.fab');
-  if (fabAnchor && fab && 'IntersectionObserver' in window) {
-    var setFab = function (hidden) {
-      fab.className = hidden ? 'fab is-hidden' : 'fab';
-      if (hidden) { fab.setAttribute('tabindex', '-1'); fab.setAttribute('aria-hidden', 'true'); }
+  // Floating add button:
+  // - steps aside while scrolling down (it would cover the amounts on the right), back on
+  //   scrolling up or at the bottom of the page (the page's bottom padding keeps it clear there)
+  // - dashboard: also hidden while the big add button is on screen (a duplicate, so it also
+  //   leaves the tab order then)
+  var fab = $('.fab');
+  if (fab) {
+    var fabAnchor = $('[data-fab-anchor]');
+    var anchorVisible = false, scrolledAway = false;
+    var lastY = window.pageYOffset, ticking = false;
+    var setFab = function () {
+      fab.classList.toggle('is-hidden', anchorVisible || scrolledAway);
+      if (anchorVisible) { fab.setAttribute('tabindex', '-1'); fab.setAttribute('aria-hidden', 'true'); }
       else { fab.removeAttribute('tabindex'); fab.removeAttribute('aria-hidden'); }
     };
-    setFab(true);
-    new IntersectionObserver(function (entries) { setFab(entries[0].isIntersecting); }).observe(fabAnchor);
+    if (fabAnchor && 'IntersectionObserver' in window) {
+      anchorVisible = true;
+      new IntersectionObserver(function (entries) {
+        anchorVisible = entries[0].isIntersecting;
+        setFab();
+      }).observe(fabAnchor);
+    }
+    window.addEventListener('scroll', function () {
+      if (ticking) { return; }
+      ticking = true;
+      window.requestAnimationFrame(function () {
+        ticking = false;
+        var y = window.pageYOffset;
+        var atBottom = y + window.innerHeight >= document.documentElement.scrollHeight - 4;
+        if (atBottom || y < 80) { scrolledAway = false; }
+        else if (Math.abs(y - lastY) > 8) { scrolledAway = y > lastY; }
+        else { return; }
+        lastY = y;
+        setFab();
+      });
+    }, { passive: true });
+    setFab();
   }
 
   // Success toasts: fade out after a few seconds, or right away on tap
