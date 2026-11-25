@@ -12,7 +12,7 @@
   <nav class="tabbar" aria-label="เมนูหลัก">
     <?php foreach ($navItems as $key => $item): ?>
       <a href="<?php echo h($item[0]); ?>"<?php echo $key === $activeNav ? ' class="active" aria-current="page"' : ''; ?>>
-        <?php echo icon($item[1], 22); ?><span><?php echo h($item[2]); ?></span>
+        <span class="tab-icon"><?php echo icon($item[1], 22); ?></span><span><?php echo h($item[2]); ?></span>
       </a>
     <?php endforeach; ?>
   </nav>

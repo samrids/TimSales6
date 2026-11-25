@@ -149,7 +149,7 @@
   function cssVar(name) { return window.getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
   function palette() {
     return {
-      series: cssVar('--series'), seriesSoft: cssVar('--series-soft'), grid: cssVar('--grid'),
+      series: cssVar('--series'), seriesMuted: cssVar('--series-muted'), grid: cssVar('--grid'),
       axis: cssVar('--axis'), text: cssVar('--text'), text2: cssVar('--text-2'),
       surface: cssVar('--surface'), line: cssVar('--line-strong')
     };
@@ -182,6 +182,13 @@
     var n = points.length;
     while (n > 0 && points[n - 1].future) { n--; }
     return n > 0 ? points.slice(0, n) : points; // trailing only, so indexes still match points[]
+  }
+
+  // The month the "this month" card shows: full colour; the others step back (bars only)
+  var nowMonth = card.getAttribute('data-now-month') || '';
+  function barColors(pts, col) {
+    var hasNow = pts.some(function (p) { return p.yearMonth === nowMonth; });
+    return pts.map(function (p) { return !hasNow || p.yearMonth === nowMonth ? col.series : col.seriesMuted; });
   }
 
   function seriesValues(key, pts) {
@@ -315,7 +322,7 @@
       pointBorderWidth: 2
     } : {
       data: values,
-      backgroundColor: col.series,
+      backgroundColor: barColors(pts, col),
       hoverBackgroundColor: col.series,
       borderWidth: 0,
       borderRadius: 4,

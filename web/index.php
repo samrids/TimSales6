@@ -118,7 +118,8 @@ require APP_DIR . '/views/header.php';
 </div>
 
 <?php if (!empty($monthly)): ?>
-<section class="card chart-card" data-chart-card>
+<?php /* data-now-month: the month the top card shows — its bar is drawn in the full colour */ ?>
+<section class="card chart-card" data-chart-card data-now-month="<?php echo $now !== null ? h($now['yearMonth']) : ''; ?>">
   <div class="card-head">
     <div>
       <h2 class="card-title" data-chart-title>ยอดขายรายเดือน</h2>
