@@ -69,6 +69,11 @@ function url($path, $params = array()) {
     return $params ? $path . '?' . http_build_query($params) : $path;
 }
 
+/** Ties a login to the current password: a new APP_PASSWORD_HASH logs every device out. */
+function auth_fingerprint() {
+    return substr(sha1('timsales-login|' . env('APP_PASSWORD_HASH')), 0, 16);
+}
+
 function is_logged_in() {
     return !empty($_SESSION['auth']);
 }
@@ -245,17 +250,34 @@ header('Content-Type: text/html; charset=utf-8');
 // ---------- Session ----------
 $isHttps = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
     || (isset($_SERVER['SERVER_PORT']) && (int)$_SERVER['SERVER_PORT'] === 443);
+// A login lasts 30 days from the last visit, like an app on the home screen (the installed
+// app would otherwise ask for the password every time it opens). Logout ends it at once;
+// changing APP_PASSWORD_HASH in .env ends every login on every device.
+define('SESSION_IDLE_SECONDS', 30 * 86400);
+// Our own session folder (inside data/, which .htaccess blocks): on shared hosting the
+// default /tmp is cleaned by other sites' garbage collection after ~24 minutes.
+$sessionDir = APP_ROOT . '/data/sessions';
+if ((is_dir($sessionDir) || @mkdir($sessionDir, 0700)) && is_writable($sessionDir)) {
+    session_save_path($sessionDir);
+    ini_set('session.gc_probability', '1'); // nobody else cleans this folder
+    ini_set('session.gc_divisor', '100');
+}
+ini_set('session.gc_maxlifetime', (string)SESSION_IDLE_SECONDS);
 session_name('TIMSALES');
-session_set_cookie_params(0, '/', '', $isHttps, true);
+session_set_cookie_params(SESSION_IDLE_SECONDS, '/', '', $isHttps, true);
 session_start();
 
-// Idle timeout: 8 hours without activity logs the user out
-define('SESSION_IDLE_SECONDS', 8 * 3600);
-if (!empty($_SESSION['auth']) && isset($_SESSION['last_seen'])
-    && time() - $_SESSION['last_seen'] > SESSION_IDLE_SECONDS) {
-    $_SESSION = array();
-    session_regenerate_id(true);
-    $sessionExpired = true; // require_login() tells the user why they are on the login page
+if (!empty($_SESSION['auth'])) {
+    $idle = isset($_SESSION['last_seen']) && time() - $_SESSION['last_seen'] > SESSION_IDLE_SECONDS;
+    $passwordChanged = !isset($_SESSION['auth_fp']) || $_SESSION['auth_fp'] !== auth_fingerprint();
+    if ($idle || $passwordChanged) {
+        $_SESSION = array();
+        session_regenerate_id(true);
+        $sessionExpired = true; // require_login() tells the user why they are on the login page
+    } else {
+        // Slide the cookie's expiry with each visit (PHP only sends it when the id is new)
+        setcookie(session_name(), session_id(), time() + SESSION_IDLE_SECONDS, '/', '', $isHttps, true);
+    }
 }
 $_SESSION['last_seen'] = time();
 

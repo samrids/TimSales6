@@ -77,13 +77,56 @@ require APP_DIR . '/views/header.php';
 </section>
 
 <section class="card">
-  <div class="card-head"><h2 class="card-title">นำเข้าจาก CSV</h2></div>
-  <p class="muted">รองรับไฟล์ส่งออกจาก Grist หรือไฟล์ที่ส่งออกจากหน้านี้ ระบบดูจากแถวแรกว่าเป็นไฟล์ชนิดใด:</p>
-  <ul class="plain-list muted">
-    <li><strong>รายการขาย</strong> — คอลัมน์ <code>saleDate, kg, unitPrice</code> (มี <code>created_at, updated_at</code> ได้)</li>
-    <li><strong>รอบการขาย</strong> — คอลัมน์ <code>saleYear, startDate, endDate</code></li>
+  <div class="card-head"><h2 class="card-title">ส่งออกและสำรองข้อมูล</h2></div>
+  <ul class="action-list">
+    <li>
+      <a href="export.php?type=db">
+        <?php echo icon('database', 20); ?>
+        <span><strong>สำรองข้อมูลทั้งหมด</strong><small>ไฟล์ .sqlite ไฟล์เดียว · <?php echo h(number_format($dbSize / 1024, 1)); ?> KB</small></span>
+        <?php echo icon('download', 18); ?>
+      </a>
+    </li>
+    <li>
+      <a href="export.php?type=sales">
+        <?php echo icon('table', 20); ?>
+        <span><strong>รายการขายทั้งหมด</strong><small>CSV · นำกลับเข้ามาได้</small></span>
+        <?php echo icon('download', 18); ?>
+      </a>
+    </li>
+    <li>
+      <a href="export.php?type=seasons">
+        <?php echo icon('table', 20); ?>
+        <span><strong>รอบการขาย</strong><small>CSV · นำกลับเข้ามาได้</small></span>
+        <?php echo icon('download', 18); ?>
+      </a>
+    </li>
   </ul>
-  <p class="muted small">รายการที่มีอยู่แล้ว (วันที่ น้ำหนัก ราคาตรงกัน หรือปีรอบซ้ำ) จะถูกข้าม นำเข้าไฟล์เดิมซ้ำได้อย่างปลอดภัย</p>
+</section>
+
+<?php /* phones: the only logout (the top-bar icon shows on wide screens only) */ ?>
+<section class="card logout-card">
+  <ul class="action-list">
+    <li>
+      <a href="logout.php">
+        <?php echo icon('logout', 20); ?>
+        <span><strong>ออกจากระบบ</strong></span>
+      </a>
+    </li>
+  </ul>
+</section>
+
+<section class="card">
+  <div class="card-head"><h2 class="card-title">นำเข้าจาก CSV</h2></div>
+  <p class="muted">ไฟล์ที่ส่งออกจากหน้านี้หรือจาก Grist · รายการที่มีอยู่แล้วจะถูกข้าม นำเข้าไฟล์เดิมซ้ำได้อย่างปลอดภัย</p>
+  <details class="details">
+    <summary>รูปแบบไฟล์ที่รองรับ</summary>
+    <p class="muted small">ระบบดูจากแถวแรกว่าเป็นไฟล์ชนิดใด:</p>
+    <ul class="plain-list muted small">
+      <li><strong>รายการขาย</strong> — คอลัมน์ <code>saleDate, kg, unitPrice</code> (มี <code>created_at, updated_at</code> ได้)</li>
+      <li><strong>รอบการขาย</strong> — คอลัมน์ <code>saleYear, startDate, endDate</code></li>
+    </ul>
+    <p class="muted small">รายการที่ถือว่าซ้ำ: วันที่ น้ำหนัก และราคาตรงกัน หรือปีของรอบซ้ำกัน</p>
+  </details>
   <form method="post" action="data.php" enctype="multipart/form-data" class="upload-form">
     <?php echo csrf_field(); ?>
     <input type="hidden" name="MAX_FILE_SIZE" value="<?php echo MAX_UPLOAD_BYTES; ?>">
@@ -92,34 +135,7 @@ require APP_DIR . '/views/header.php';
       <span data-file-name>เลือกไฟล์ .csv</span>
       <input type="file" name="csv" accept=".csv,text/csv" required>
     </label>
-    <button type="submit" class="btn btn-primary"><?php echo icon('upload', 18); ?> นำเข้า</button>
+    <button type="submit" class="btn btn-primary" data-busy-label="กำลังนำเข้า…"><?php echo icon('upload', 18); ?> นำเข้า</button>
   </form>
-</section>
-
-<section class="card">
-  <div class="card-head"><h2 class="card-title">ส่งออกและสำรองข้อมูล</h2></div>
-  <ul class="action-list">
-    <li>
-      <a href="export.php?type=sales">
-        <?php echo icon('download', 20); ?>
-        <span><strong>รายการขายทั้งหมด</strong><small>CSV · นำกลับเข้ามาได้</small></span>
-        <?php echo icon('chevron', 16); ?>
-      </a>
-    </li>
-    <li>
-      <a href="export.php?type=seasons">
-        <?php echo icon('download', 20); ?>
-        <span><strong>รอบการขาย</strong><small>CSV · นำกลับเข้ามาได้</small></span>
-        <?php echo icon('chevron', 16); ?>
-      </a>
-    </li>
-    <li>
-      <a href="export.php?type=db">
-        <?php echo icon('database', 20); ?>
-        <span><strong>ไฟล์ฐานข้อมูล SQLite</strong><small>สำรองทั้งหมดในไฟล์เดียว · <?php echo h(number_format($dbSize / 1024, 1)); ?> KB</small></span>
-        <?php echo icon('chevron', 16); ?>
-      </a>
-    </li>
-  </ul>
 </section>
 <?php require APP_DIR . '/views/footer.php'; ?>

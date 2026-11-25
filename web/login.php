@@ -26,6 +26,7 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] === 'POST') 
     } elseif ($password !== '' && password_verify($password, $hash)) {
         session_regenerate_id(true);
         $_SESSION['auth'] = true;
+        $_SESSION['auth_fp'] = auth_fingerprint();
         $_SESSION['csrf'] = random_hex(32);
         // Back to the page the user was on when the session ran out
         $back = isset($_SESSION['return_to']) ? $_SESSION['return_to'] : '';
@@ -53,7 +54,7 @@ require APP_DIR . '/views/header.php';
   <?php endif; ?>
 
   <?php if ($error !== ''): ?>
-    <div class="alert alert-error"><?php echo icon('alert', 18); ?><span><?php echo h($error); ?></span></div>
+    <div class="alert alert-error" id="login-error" role="alert"><?php echo icon('alert', 18); ?><span><?php echo h($error); ?></span></div>
   <?php endif; ?>
 
   <?php if ($generated !== null): ?>
@@ -64,14 +65,14 @@ require APP_DIR . '/views/header.php';
     </div>
   <?php endif; ?>
 
-  <form method="post" action="login.php" class="form" autocomplete="off">
+  <form method="post" action="login.php" class="form">
     <?php echo csrf_field(); ?>
     <div class="field">
       <label class="field-label" for="password"><?php echo $setupMode ? 'รหัสผ่านใหม่' : 'รหัสผ่าน'; ?></label>
-      <input type="password" id="password" name="password" required autofocus
+      <input type="password" id="password" name="password" required autofocus<?php echo $error !== '' ? ' aria-invalid="true" aria-describedby="login-error"' : ''; ?>
              autocomplete="<?php echo $setupMode ? 'new-password' : 'current-password'; ?>">
     </div>
-    <button type="submit" class="btn btn-primary btn-block">
+    <button type="submit" class="btn btn-primary btn-block" data-busy-label="<?php echo $setupMode ? 'กำลังสร้าง…' : 'กำลังเข้าสู่ระบบ…'; ?>">
       <?php echo $setupMode ? 'สร้างค่า APP_PASSWORD_HASH' : 'เข้าสู่ระบบ'; ?>
     </button>
   </form>

@@ -26,6 +26,7 @@ web/.env
 # Web SQLite database (local copy) — the live one stays on the server
 web/data/*.sqlite
 web/data/*.sqlite-journal
+web/data/sessions/
 
 # Real sales data and screenshots — repo is public, keep local only
 docs/

@@ -41,15 +41,22 @@ $pageTitle = 'รายการขาย';
 $srHeading = true;
 $activeNav = 'sales';
 $fabUrl = 'sale_form.php';
-$fabLabel = 'เพิ่มยอดขาย';
+$fabLabel = 'เพิ่มรายการขาย';
 require APP_DIR . '/views/header.php';
 ?>
-<section class="page-head">
-  <p class="season-title"><?php echo $showOrphans ? 'ไม่อยู่ในรอบใด' : ($season !== null ? h($season->label()) : 'ทั้งหมด'); ?></p>
-  <a class="btn btn-quiet btn-sm" href="<?php echo h(url('export.php', array('type' => 'sales', 'season' => $showOrphans ? 'none' : ($season !== null ? $season->code() : null)))); ?>">
-    <?php echo icon('download', 16); ?> CSV
-  </a>
-  <?php echo season_tabs($seasons, $season, 'sales.php', count($orphans), $showOrphans); ?>
+<?php
+// One row: the season links double as the page title (the current one is highlighted),
+// so there is no separate heading repeating it. CSV export is a quiet icon at the end.
+$tabs = season_tabs($seasons, $season, 'sales.php', count($orphans), $showOrphans);
+$csvUrl = url('export.php', array('type' => 'sales', 'season' => $showOrphans ? 'none' : ($season !== null ? $season->code() : null)));
+?>
+<section class="list-toolbar">
+  <?php if ($tabs !== ''): ?>
+    <?php echo $tabs; ?>
+  <?php else: ?>
+    <p class="season-title"><?php echo $showOrphans ? 'ไม่อยู่ในรอบใด' : ($season !== null ? h($season->label()) : 'ทั้งหมด'); ?></p>
+  <?php endif; ?>
+  <a class="icon-btn" href="<?php echo h($csvUrl); ?>" aria-label="ดาวน์โหลด CSV" title="ดาวน์โหลด CSV"><?php echo icon('download', 20); ?></a>
 </section>
 
 <?php if (!empty($orphans) && !$showOrphans): ?>
@@ -60,29 +67,29 @@ require APP_DIR . '/views/header.php';
   </div>
 <?php endif; ?>
 
-<section class="stats">
-  <div class="card stat"><div class="stat-label">ยอดขาย</div><div class="stat-value"><?php echo h(fmt_number($stats['totalAmount'])); ?> <small>บาท</small></div></div>
-  <div class="card stat"><div class="stat-label">ปริมาณ</div><div class="stat-value"><?php echo h(fmt_trim($stats['totalKg'])); ?> <small>กก.</small></div></div>
-  <div class="card stat"><div class="stat-label">รายการ</div><div class="stat-value"><?php echo (int)$stats['recordCount']; ?> <small>รายการ</small></div></div>
-</section>
-
 <?php if ($error !== null): ?>
   <div class="alert alert-error"><?php echo icon('alert', 18); ?><span><?php echo h($error); ?> <a href="<?php echo h(sales_list_url()); ?>">ลองใหม่</a></span></div>
 <?php elseif (empty($records)): ?>
   <div class="card empty">
     <div class="empty-icon"><?php echo icon('list', 28); ?></div>
     <p>ยังไม่มีรายการขาย<?php echo $season !== null ? 'ใน' . h($season->label()) : ''; ?></p>
-    <a class="btn btn-primary" href="sale_form.php"><?php echo icon('plus', 18); ?> เพิ่มยอดขาย</a>
+    <a class="btn btn-primary" href="sale_form.php"><?php echo icon('plus', 18); ?> เพิ่มรายการขาย</a>
   </div>
 <?php else: ?>
+  <?php /* the total only when there is something to add up: after an error ฿0.00 would be wrong */ ?>
+  <section class="card list-summary">
+    <div class="stat-label">ยอดขายรวม</div>
+    <div class="list-summary-total"><?php echo money_hero($stats['totalAmount']); ?></div>
+    <p class="list-summary-sub"><?php echo h(fmt_trim($stats['totalKg'])); ?> กก. · <?php echo (int)$stats['recordCount']; ?> รายการ</p>
+  </section>
   <?php foreach ($groups as $g): ?>
-    <section class="card month-group">
+    <section class="month-group">
       <header class="month-head">
         <h2><?php echo h($g['title']); ?></h2>
-        <span><?php echo count($g['rows']); ?> รายการ · <strong><?php echo h(fmt_number($g['amount'])); ?></strong> บาท</span>
+        <span><?php echo count($g['rows']); ?> รายการ · <strong><?php echo h(fmt_number($g['amount'])); ?><span class="sr-only"> บาท</span></strong></span>
       </header>
-      <ul class="sale-list">
-        <?php foreach ($g['rows'] as $r) { echo sale_row($r); } ?>
+      <ul class="sale-list card">
+        <?php foreach ($g['rows'] as $r) { echo sale_row($r, false); } ?>
       </ul>
     </section>
   <?php endforeach; ?>

@@ -41,12 +41,69 @@
     });
   });
 
-  // Disable the submit button once, so a slow save can't be sent twice
-  each('form.form', function (form) {
-    form.addEventListener('submit', function () {
+  // Disable the submit buttons once, so a slow save can't be sent twice, and say what's happening
+  // on the one that was pressed. (After the event, so the pressed button's name/value still go.)
+  each('form.form, form.upload-form', function (form) {
+    form.addEventListener('submit', function (e) {
+      if (e.defaultPrevented) { return; }
       var btns = form.querySelectorAll('button[type=submit]');
-      setTimeout(function () { Array.prototype.forEach.call(btns, function (b) { b.disabled = true; }); }, 0);
+      var pressed = e.submitter || btns[0];
+      setTimeout(function () {
+        Array.prototype.forEach.call(btns, function (b) { b.disabled = true; });
+        if (pressed) {
+          pressed.setAttribute('data-idle-html', pressed.innerHTML);
+          pressed.textContent = pressed.getAttribute('data-busy-label') || 'กำลังบันทึก…';
+        }
+        form.setAttribute('aria-busy', 'true');
+      }, 0);
     });
+  });
+  // Back/forward cache: a page restored after submitting comes back usable
+  window.addEventListener('pageshow', function (e) {
+    if (!e.persisted) { return; }
+    each('form[aria-busy]', function (form) { form.removeAttribute('aria-busy'); });
+    each('button[type=submit]', function (b) {
+      b.disabled = false;
+      if (b.hasAttribute('data-idle-html')) { b.innerHTML = b.getAttribute('data-idle-html'); b.removeAttribute('data-idle-html'); }
+    });
+  });
+
+  // Back arrow / ยกเลิก: return to the page the user came from (dashboard, list, …) like an app.
+  // The link's own href is the fallback: opened directly, after a failed save, or from login.
+  each('[data-back]', function (link) {
+    link.addEventListener('click', function (e) {
+      var ref = document.referrer, origin = window.location.origin;
+      if (!ref || ref.indexOf(origin + '/') !== 0 || window.history.length < 2) { return; }
+      var refPath = ref.slice(origin.length).split('#')[0].split('?')[0];
+      if (refPath === window.location.pathname || /\/login\.php$/.test(refPath)) { return; }
+      e.preventDefault();
+      window.history.back();
+    });
+  });
+
+  // Dashboard: the floating add button only once the big add button has scrolled out of view
+  var fabAnchor = $('[data-fab-anchor]'), fab = $('.fab');
+  if (fabAnchor && fab && 'IntersectionObserver' in window) {
+    var setFab = function (hidden) {
+      fab.className = hidden ? 'fab is-hidden' : 'fab';
+      if (hidden) { fab.setAttribute('tabindex', '-1'); fab.setAttribute('aria-hidden', 'true'); }
+      else { fab.removeAttribute('tabindex'); fab.removeAttribute('aria-hidden'); }
+    };
+    setFab(true);
+    new IntersectionObserver(function (entries) { setFab(entries[0].isIntersecting); }).observe(fabAnchor);
+  }
+
+  // Success toasts: fade out after a few seconds, or right away on tap
+  each('[data-toasts] .toast', function (toast, i) {
+    var gone = false;
+    function dismiss() {
+      if (gone) { return; }
+      gone = true;
+      toast.className += ' is-out';
+      setTimeout(function () { if (toast.parentNode) { toast.parentNode.removeChild(toast); } }, 250);
+    }
+    toast.addEventListener('click', dismiss);
+    setTimeout(dismiss, 4500 + i * 1000);
   });
 
   each('.file-drop input[type=file]', function (input) {
@@ -80,6 +137,10 @@
     }
     kg.addEventListener('input', updateTotal);
     price.addEventListener('input', updateTotal);
+    // Enter on the keypad in "kg" moves on to the price instead of saving a sale with no price
+    kg.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' || e.keyCode === 13) { e.preventDefault(); price.focus(); }
+    });
     date.addEventListener('change', updateSeason);
     date.addEventListener('input', updateSeason);
     updateTotal();
@@ -132,7 +193,7 @@
   function cssVar(name) { return window.getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
   function palette() {
     return {
-      series: cssVar('--series'), seriesSoft: cssVar('--series-soft'), grid: cssVar('--grid'),
+      series: cssVar('--series'), seriesMuted: cssVar('--series-muted'), grid: cssVar('--grid'),
       axis: cssVar('--axis'), text: cssVar('--text'), text2: cssVar('--text-2'),
       surface: cssVar('--surface'), line: cssVar('--line-strong')
     };
@@ -165,6 +226,13 @@
     var n = points.length;
     while (n > 0 && points[n - 1].future) { n--; }
     return n > 0 ? points.slice(0, n) : points; // trailing only, so indexes still match points[]
+  }
+
+  // The month the "this month" card shows: full colour; the others step back (bars only)
+  var nowMonth = card.getAttribute('data-now-month') || '';
+  function barColors(pts, col) {
+    var hasNow = pts.some(function (p) { return p.yearMonth === nowMonth; });
+    return pts.map(function (p) { return !hasNow || p.yearMonth === nowMonth ? col.series : col.seriesMuted; });
   }
 
   function seriesValues(key, pts) {
@@ -298,7 +366,7 @@
       pointBorderWidth: 2
     } : {
       data: values,
-      backgroundColor: col.series,
+      backgroundColor: barColors(pts, col),
       hoverBackgroundColor: col.series,
       borderWidth: 0,
       borderRadius: 4,
@@ -379,9 +447,16 @@
   var viewBtn = $('[data-view-toggle]', card);
   var chart = null;
 
+  // The canvas is an image to screen readers: name what it shows and where the numbers are
+  function chartLabel() {
+    var m = METRICS[metric];
+    return m.title + ' (' + m.unit + ') — ดูตัวเลขทั้งหมดได้ในมุมมองตาราง';
+  }
+
   function render() {
     var m = METRICS[metric];
     titleEl.textContent = m.title;
+    canvas.setAttribute('aria-label', chartLabel());
     subEl.textContent = 'หน่วย: ' + m.unit + (m.type === 'line' ? ' · ถ่วงน้ำหนักตามปริมาณ' : '');
     each('[data-metric]', function (b) { b.setAttribute('aria-pressed', b.getAttribute('data-metric') === metric ? 'true' : 'false'); });
     if (chart) { chart.destroy(); }
@@ -436,6 +511,7 @@
   function openModal() {
     lastFocus = document.activeElement;
     modalTitle.textContent = METRICS[metric].title + ' (' + METRICS[metric].unit + ')';
+    modalCanvas.setAttribute('aria-label', chartLabel());
     modal.hidden = false;
     document.body.style.overflow = 'hidden';
     setBackgroundInert(true);

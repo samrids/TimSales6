@@ -65,7 +65,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $error === null) {
             if ($isEdit) {
                 sales_repo()->update($id, $v['saleDate'], $v['kg'], $v['unitPrice']);
                 $savedId = $id;
-                flash('success', 'แก้ไขข้อมูลเรียบร้อยแล้ว');
+                flash('success', 'แก้ไขรายการขายแล้ว');
             } else {
                 $savedId = sales_repo()->create($v['saleDate'], $v['kg'], $v['unitPrice']);
                 if (!empty($_POST['next'])) {
@@ -74,7 +74,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $error === null) {
                         . fmt_money($v['kg'] * $v['unitPrice']) . ' — เพิ่มรายการถัดไปได้เลย');
                     redirect(url('sale_form.php', array('date' => $v['saleDate'])));
                 }
-                flash('success', 'บันทึกข้อมูลเรียบร้อยแล้ว');
+                flash('success', 'บันทึกรายการขายแล้ว');
             }
             // Land on the season the sale actually counts toward, not the one last viewed
             $saved = sales_repo()->find($savedId);
@@ -92,7 +92,7 @@ foreach ($seasons as $s) {
 }
 usort($ranges, function ($a, $b) { return strcmp($a['start'], $b['start']); });
 
-$pageTitle = $isEdit ? 'แก้ไขยอดขาย' : 'เพิ่มยอดขาย';
+$pageTitle = $isEdit ? 'แก้ไขรายการขาย' : 'เพิ่มรายการขาย';
 $backUrl = sales_list_url();
 require APP_DIR . '/views/header.php';
 ?>
@@ -115,7 +115,7 @@ require APP_DIR . '/views/header.php';
     <div class="field">
       <label class="field-label" for="kg">น้ำหนัก<span class="sr-only"> (กก.)</span></label>
       <div class="input-affix">
-        <input type="text" id="kg" name="kg" inputmode="decimal" placeholder="0" value="<?php echo h($form['kg']); ?>" required autocomplete="off"<?php echo field_attrs($errors, 'kg'); ?>>
+        <input type="text" id="kg" name="kg" inputmode="decimal" enterkeyhint="next" placeholder="0" value="<?php echo h($form['kg']); ?>" required autocomplete="off"<?php echo field_attrs($errors, 'kg'); ?>>
         <span aria-hidden="true">กก.</span>
       </div>
       <?php echo field_error($errors, 'kg'); ?>
@@ -123,7 +123,7 @@ require APP_DIR . '/views/header.php';
     <div class="field">
       <label class="field-label" for="unitPrice">ราคาต่อกิโลกรัม<span class="sr-only"> (บาท)</span></label>
       <div class="input-affix">
-        <input type="text" id="unitPrice" name="unitPrice" inputmode="decimal" placeholder="0.00" value="<?php echo h($form['unitPrice']); ?>" required autocomplete="off"<?php echo field_attrs($errors, 'unitPrice'); ?>>
+        <input type="text" id="unitPrice" name="unitPrice" inputmode="decimal" enterkeyhint="done" placeholder="0.00" value="<?php echo h($form['unitPrice']); ?>" required autocomplete="off"<?php echo field_attrs($errors, 'unitPrice'); ?>>
         <span aria-hidden="true">บาท</span>
       </div>
       <?php echo field_error($errors, 'unitPrice'); ?>
@@ -135,23 +135,21 @@ require APP_DIR . '/views/header.php';
       <?php endif; ?>
     </div>
   </div>
-  <div class="total-box">
-    <span>ยอดรวม</span>
-    <strong><span data-total>0.00</span> <small>บาท</small></strong>
+  <?php /* Total + "บันทึก" stick to the bottom of the screen, so they stay visible above the
+           phone keyboard. "บันทึก" is the first submit button in the DOM: Enter does a plain save. */ ?>
+  <div class="form-actions">
+    <div class="total-box">
+      <span>ยอดรวม</span>
+      <strong><span data-total>0.00</span> <small>บาท</small></strong>
+    </div>
+    <button type="submit" class="btn btn-primary"><?php echo icon('check', 18); ?> บันทึก</button>
   </div>
-  <?php if ($isEdit): ?>
   <div class="form-buttons">
-    <a class="btn btn-quiet" href="<?php echo h($backUrl); ?>">ยกเลิก</a>
-    <button type="submit" class="btn btn-primary"><?php echo icon('check', 18); ?> บันทึก</button>
+    <a class="btn btn-quiet" href="<?php echo h($backUrl); ?>" data-back>ยกเลิก</a>
+    <?php if (!$isEdit): ?>
+      <button type="submit" class="btn btn-quiet" name="next" value="1"><?php echo icon('plus', 18); ?> บันทึกและเพิ่มต่อ</button>
+    <?php endif; ?>
   </div>
-  <?php else: ?>
-  <?php /* "บันทึก" first in the DOM so Enter keeps doing a plain save */ ?>
-  <div class="form-buttons form-buttons-3">
-    <button type="submit" class="btn btn-primary"><?php echo icon('check', 18); ?> บันทึก</button>
-    <a class="btn btn-quiet" href="<?php echo h($backUrl); ?>">ยกเลิก</a>
-    <button type="submit" class="btn btn-quiet" name="next" value="1"><?php echo icon('plus', 18); ?> บันทึกและเพิ่มต่อ</button>
-  </div>
-  <?php endif; ?>
   <script type="application/json" id="seasonRanges"><?php echo json_for_html($ranges); ?></script>
 </form>
 
