@@ -6,7 +6,7 @@ csrf_check();
 $id = isset($_POST['id']) ? (int)$_POST['id'] : 0;
 try {
     if ($id > 0 && sales_repo()->delete($id)) {
-        flash('success', 'ลบข้อมูลเรียบร้อยแล้ว');
+        flash('success', 'ลบรายการขายแล้ว');
     } else {
         flash('error', 'ไม่พบรายการที่ต้องการลบ');
     }

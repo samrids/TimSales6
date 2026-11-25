@@ -50,15 +50,32 @@ if ($now === null) {
     }
 }
 $delta = null; // percent change in revenue vs the month before
-if ($now !== null && $prev !== null && $prev['revenue'] > 0) {
-    $delta = ($now['revenue'] - $prev['revenue']) / $prev['revenue'] * 100;
+$deltaLabel = 'จากเดือนก่อน';
+if ($now !== null && $prev !== null) {
+    $prevRevenue = $prev['revenue'];
+    $today = (int)date('j');
+    if ($isCurrent && $today < (int)date('t')) {
+        // This month isn't over: compare like with like — the same days of last month (1st–today)
+        $prevRevenue = 0.0;
+        foreach ($sales as $r) {
+            if (substr($r['saleDate'], 0, 7) === $prev['yearMonth'] && (int)substr($r['saleDate'], 8, 2) <= $today) {
+                $prevRevenue += $r['amount'];
+            }
+        }
+        $deltaLabel = 'จาก ' . ($today > 1 ? '1–' : '') . $today . ' ' . thai_month_short((int)substr($prev['yearMonth'], 5, 2));
+    }
+    if ($prevRevenue > 0) {
+        $delta = ($now['revenue'] - $prevRevenue) / $prevRevenue * 100;
+    }
 }
+// A season with no sales yet: one empty card instead of zeros, an empty chart and an empty list
+$isEmpty = $season !== null && $error === null && (int)$stats['recordCount'] === 0;
 
 $pageTitle = $season !== null ? 'ภาพรวม ' . $season->label() : 'ภาพรวม';
 $srHeading = true;
 $activeNav = 'dashboard';
-$useCharts = !empty($monthly);
-// No floating button here: the big "เพิ่มยอดขาย" button sits right under the month card
+$useCharts = !empty($monthly) && !$isEmpty;
+// No floating button here: the big "เพิ่มรายการขาย" button sits right under the month card
 require APP_DIR . '/views/header.php';
 ?>
 <?php if ($error !== null): ?>
@@ -74,6 +91,14 @@ require APP_DIR . '/views/header.php';
     <p class="season-title"><?php echo h($season->label()); ?></p>
   <?php endif; ?>
 </section>
+<?php if ($isEmpty): ?>
+<section class="card empty">
+  <div class="empty-icon"><?php echo icon('list', 28); ?></div>
+  <p>ยังไม่มีรายการขายใน<?php echo h($season->label()); ?><br>
+    <span class="small"><?php echo h(season_range($season)); ?></span></p>
+  <a class="btn btn-primary" href="sale_form.php"><?php echo icon('plus', 18); ?> เพิ่มรายการขาย</a>
+</section>
+<?php else: ?>
 <div class="dash-top">
   <section class="now-card" aria-labelledby="now-title">
     <div class="now-head">
@@ -82,7 +107,7 @@ require APP_DIR . '/views/header.php';
         <span class="delta <?php echo $delta >= 0 ? 'is-up' : 'is-down'; ?>">
           <span aria-hidden="true"><?php echo $delta >= 0 ? '▲' : '▼'; ?></span>
           <span class="sr-only"><?php echo $delta >= 0 ? 'เพิ่มขึ้น' : 'ลดลง'; ?></span>
-          <?php echo h(number_format(abs($delta), 0)); ?>% จากเดือนก่อน
+          <?php echo h(number_format(abs($delta), 0)); ?>% <?php echo h($deltaLabel); ?>
         </span>
       <?php endif; ?>
     </div>
@@ -98,7 +123,7 @@ require APP_DIR . '/views/header.php';
     <?php endif; ?>
   </section>
 
-  <a class="btn btn-primary btn-xl" href="sale_form.php"><?php echo icon('plus', 22); ?> เพิ่มยอดขาย</a>
+  <a class="btn btn-primary btn-xl" href="sale_form.php"><?php echo icon('plus', 22); ?> เพิ่มรายการขาย</a>
 
   <section class="season-strip" aria-label="สรุปทั้งรอบ">
     <div class="season-strip-head">
@@ -107,10 +132,8 @@ require APP_DIR . '/views/header.php';
     </div>
     <div class="season-strip-total"><?php echo money_hero($stats['totalAmount']); ?></div>
     <p class="season-strip-sub">
-      <?php if ($stats['recordCount'] > 0): ?>
+      <?php if ($stats['recordCount'] > 0): /* 0 here only after a load error */ ?>
         <?php echo h(fmt_trim($stats['totalKg'])); ?> กก. · เฉลี่ย <?php echo h(fmt_number($stats['averageUnitPrice'])); ?> บาท/กก. · <?php echo (int)$stats['recordCount']; ?> รายการ
-      <?php else: ?>
-        ยังไม่มียอดขายในรอบนี้
       <?php endif; ?>
     </p>
     <p class="season-strip-range"><?php echo h(season_range($season)); ?></p>
@@ -180,18 +203,12 @@ require APP_DIR . '/views/header.php';
       <a class="link-more" href="<?php echo h(sales_list_url()); ?>">ดูทั้งหมด <?php echo icon('chevron', 16); ?></a>
     <?php endif; ?>
   </div>
-  <?php if (empty($recent)): ?>
-    <div class="empty">
-      <p>ยังไม่มีรายการขายในรอบนี้</p>
-      <a class="btn btn-primary" href="sale_form.php"><?php echo icon('plus', 18); ?> เพิ่มยอดขาย</a>
-    </div>
-  <?php else: ?>
-    <ul class="sale-list">
-      <?php foreach ($recent as $r) { echo sale_row($r); } ?>
-    </ul>
-  <?php endif; ?>
+  <ul class="sale-list">
+    <?php foreach ($recent as $r) { echo sale_row($r); } ?>
+  </ul>
 </section>
-<?php endif; ?>
+<?php endif; /* $isEmpty */ ?>
+<?php endif; /* $season */ ?>
 
 <div class="modal" id="chartModal" hidden role="dialog" aria-modal="true" aria-labelledby="chartModalTitle">
   <div class="modal-inner">

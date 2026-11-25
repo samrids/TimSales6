@@ -104,7 +104,9 @@ require APP_DIR . '/views/header.php';
 <?php if ($isEdit && $season !== null): ?>
   <p class="meta-line">สร้างเมื่อ <?php echo h(fmt_timestamp($season->createdAt)); ?> · แก้ไขล่าสุด <?php echo h(fmt_timestamp($season->updatedAt)); ?></p>
   <form method="post" action="season_delete.php" class="danger-zone"
-        data-confirm="ลบ<?php echo h($season->label()); ?> ใช่หรือไม่?&#10;&#10;รายการขาย <?php echo (int)$count; ?> รายการในรอบนี้จะไม่ถูกลบ แต่จะไม่แสดงในภาพรวมจนกว่าจะมีรอบที่ครอบคลุมวันที่นั้น">
+        data-confirm="ลบ<?php echo h($season->label()); ?> ใช่หรือไม่?&#10;&#10;<?php echo (int)$count === 0
+            ? 'รอบนี้ยังไม่มีรายการขาย'
+            : 'รายการขาย ' . (int)$count . ' รายการในรอบนี้จะไม่ถูกลบ แต่จะไม่แสดงในภาพรวมจนกว่าจะมีรอบที่ครอบคลุมวันที่นั้น'; ?>">
     <?php echo csrf_field(); ?>
     <input type="hidden" name="id" value="<?php echo (int)$season->id; ?>">
     <button type="submit" class="btn btn-danger-quiet"><?php echo icon('trash', 18); ?> ลบรอบนี้</button>

@@ -338,9 +338,17 @@ small { font-size: .8em; }
 
 /* ---------- Seasons ---------- */
 .season-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
-.season-card { display: block; color: var(--text); margin: 0; }
-.season-card-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
-.season-card-head h2 { font-size: var(--fs-lg); font-weight: 700; }
+.season-card { position: relative; color: var(--text); margin: 0; }
+.season-card-head { display: flex; align-items: center; gap: 8px; }
+.season-card-head h2 { font-size: var(--fs-lg); font-weight: 700; margin-right: auto; }
+/* whole card = link to the season's sales; the edit button is lifted above that link */
+.season-card-link { color: inherit; }
+.season-card-link::after { content: ""; position: absolute; inset: 0; border-radius: inherit; }
+.season-card-edit { position: relative; z-index: 1; margin: -10px -10px -10px 0; }
+@supports selector(:has(*)) {
+  .season-card-link:focus-visible { outline: none; }
+  .season-card:has(.season-card-link:focus-visible) { outline: 2px solid var(--brand); outline-offset: 2px; }
+}
 .season-card-range { display: flex; align-items: center; gap: 8px; color: var(--text-2); font-size: var(--fs-sm); margin: 8px 0 12px; }
 .season-card-stats { display: flex; gap: 20px; color: var(--text-2); font-size: var(--fs-sm); padding-top: 12px; border-top: 1px solid var(--line); }
 .season-card-stats strong { color: var(--text); font-weight: 600; }
@@ -434,6 +442,8 @@ input:focus, select.input:focus { outline: 2px solid var(--brand); outline-offse
 .action-list small { color: var(--text-3); font-size: var(--fs-xs); }
 .plain-list { margin: 8px 0; padding-left: 20px; }
 .plain-list li { margin: 2px 0; }
+.details { margin: 4px 0 0; }
+.details summary { cursor: pointer; color: var(--brand); font-size: var(--fs-sm); font-weight: 500; padding: 10px 0; } /* list-item keeps the ▸ marker; padding = 44px tap target */
 
 /* ---------- Alerts / empty states ---------- */
 .alert {
@@ -509,7 +519,8 @@ input:focus, select.input:focus { outline: 2px solid var(--brand); outline-offse
   .nav-desktop a:hover { background: rgba(255, 255, 255, .10); color: var(--bar-ink); text-decoration: none; }
   .tabbar a:hover { text-decoration: none; color: var(--text-2); }
   .sale-row:hover { text-decoration: none; background: var(--surface-2); }
-  .season-card:hover { text-decoration: none; border-color: var(--line-strong); }
+  .season-card:hover { border-color: var(--line-strong); }
+  .season-card-link:hover { text-decoration: none; }
   .btn:hover { text-decoration: none; }
   .btn-primary:hover { background: var(--brand-hover); }
   .btn-quiet:hover { background: var(--surface-2); }

@@ -22,13 +22,13 @@ require APP_DIR . '/views/header.php';
 <section class="page-head">
   <div>
     <h1 class="page-title">รอบการขาย</h1>
-    <p class="muted">รายการขายนับเข้ารอบตามวันที่ขาย — รอบใหม่เริ่มต้นที่ 1 ก.พ. ถึง 31 มี.ค. ปีถัดไป (แก้ไขได้)</p>
+    <p class="muted">รายการขายนับเข้ารอบตามวันที่ขาย — ค่าเริ่มต้นของรอบใหม่: 1 ก.พ. – 31 มี.ค. ปีถัดไป (แก้ไขได้)</p>
   </div>
 </section>
 
 <?php if (!empty($overlaps)): ?>
-  <div class="alert alert-info">
-    <?php echo icon('info', 18); ?>
+  <div class="alert alert-warn">
+    <?php echo icon('alert', 18); ?>
     <span>
       <?php foreach ($overlaps as $i => $pair): ?>
         <?php echo $i > 0 ? '<br>' : ''; ?>
@@ -51,18 +51,20 @@ require APP_DIR . '/views/header.php';
   <?php foreach ($seasons as $s):
       $t = isset($totals[$s->saleYear]) ? $totals[$s->saleYear] : array('count' => 0, 'amount' => 0.0); ?>
     <li>
-      <a class="card season-card" href="<?php echo h(url('season_form.php', array('id' => $s->id))); ?>">
-        <span class="sr-only">แก้ไข</span>
+      <div class="card season-card">
         <div class="season-card-head">
-          <h2><?php echo h($s->label()); ?></h2>
+          <?php /* the link covers the whole card (::after); the edit button sits above it */ ?>
+          <h2><a class="season-card-link" href="<?php echo h(url('sales.php', array('season' => $s->code()))); ?>"><?php echo h($s->label()); ?></a></h2>
           <?php echo season_chip($s); ?>
+          <a class="icon-btn season-card-edit" href="<?php echo h(url('season_form.php', array('id' => $s->id))); ?>"
+             aria-label="แก้ไข<?php echo h($s->label()); ?>" title="แก้ไข"><?php echo icon('edit', 18); ?></a>
         </div>
         <p class="season-card-range"><?php echo icon('calendar', 16); ?> <?php echo h(season_range($s)); ?></p>
         <div class="season-card-stats">
           <span><strong><?php echo h(fmt_number($t['amount'])); ?></strong> บาท</span>
           <span><strong><?php echo (int)$t['count']; ?></strong> รายการ</span>
         </div>
-      </a>
+      </div>
     </li>
   <?php endforeach; ?>
   </ul>

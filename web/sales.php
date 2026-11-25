@@ -41,7 +41,7 @@ $pageTitle = 'รายการขาย';
 $srHeading = true;
 $activeNav = 'sales';
 $fabUrl = 'sale_form.php';
-$fabLabel = 'เพิ่มยอดขาย';
+$fabLabel = 'เพิ่มรายการขาย';
 require APP_DIR . '/views/header.php';
 ?>
 <?php
@@ -67,21 +67,21 @@ $csvUrl = url('export.php', array('type' => 'sales', 'season' => $showOrphans ? 
   </div>
 <?php endif; ?>
 
-<section class="card list-summary">
-  <div class="stat-label">ยอดขายรวม</div>
-  <div class="list-summary-total"><?php echo money_hero($stats['totalAmount']); ?></div>
-  <p class="list-summary-sub"><?php echo h(fmt_trim($stats['totalKg'])); ?> กก. · <?php echo (int)$stats['recordCount']; ?> รายการ</p>
-</section>
-
 <?php if ($error !== null): ?>
   <div class="alert alert-error"><?php echo icon('alert', 18); ?><span><?php echo h($error); ?> <a href="<?php echo h(sales_list_url()); ?>">ลองใหม่</a></span></div>
 <?php elseif (empty($records)): ?>
   <div class="card empty">
     <div class="empty-icon"><?php echo icon('list', 28); ?></div>
     <p>ยังไม่มีรายการขาย<?php echo $season !== null ? 'ใน' . h($season->label()) : ''; ?></p>
-    <a class="btn btn-primary" href="sale_form.php"><?php echo icon('plus', 18); ?> เพิ่มยอดขาย</a>
+    <a class="btn btn-primary" href="sale_form.php"><?php echo icon('plus', 18); ?> เพิ่มรายการขาย</a>
   </div>
 <?php else: ?>
+  <?php /* the total only when there is something to add up: after an error ฿0.00 would be wrong */ ?>
+  <section class="card list-summary">
+    <div class="stat-label">ยอดขายรวม</div>
+    <div class="list-summary-total"><?php echo money_hero($stats['totalAmount']); ?></div>
+    <p class="list-summary-sub"><?php echo h(fmt_trim($stats['totalKg'])); ?> กก. · <?php echo (int)$stats['recordCount']; ?> รายการ</p>
+  </section>
   <?php foreach ($groups as $g): ?>
     <section class="month-group">
       <header class="month-head">

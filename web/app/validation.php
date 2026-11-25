@@ -34,11 +34,11 @@ function validate_sale($saleDate, $kgText, $priceText) {
         $errors['kg'] = 'น้ำหนักต้องอยู่ระหว่าง ' . fmt_trim(MIN_WEIGHT) . ' ถึง ' . fmt_trim(MAX_WEIGHT) . ' กก.';
     }
     if ($priceText === '') {
-        $errors['unitPrice'] = 'กรุณาใส่ราคาต่อหน่วย';
+        $errors['unitPrice'] = 'กรุณาใส่ราคาต่อกิโลกรัม';
     } elseif ($price === null || $price <= 0) {
-        $errors['unitPrice'] = 'ราคาต่อหน่วยต้องเป็นตัวเลขที่มากกว่า 0';
+        $errors['unitPrice'] = 'ราคาต่อกิโลกรัมต้องเป็นตัวเลขที่มากกว่า 0';
     } elseif ($price < MIN_PRICE || $price > MAX_PRICE) {
-        $errors['unitPrice'] = 'ราคาต่อหน่วยต้องอยู่ระหว่าง ' . fmt_trim(MIN_PRICE) . ' ถึง ' . fmt_trim(MAX_PRICE) . ' บาท/กก.';
+        $errors['unitPrice'] = 'ราคาต่อกิโลกรัมต้องอยู่ระหว่าง ' . fmt_trim(MIN_PRICE) . ' ถึง ' . fmt_trim(MAX_PRICE) . ' บาท/กก.';
     }
 
     if ($errors) {
@@ -68,6 +68,8 @@ function validate_season($yearText, $startDate, $endDate) {
         $yearError = 'กรุณาใส่ปี';
     } elseif (!preg_match('/^\d+$/', $yearText)) {
         $yearError = 'กรุณาใส่ปีเป็นตัวเลข';
+    } elseif ((int)$yearText >= 2400 && (int)$yearText <= 2700) {
+        $yearError = 'นี่คือปี พ.ศ. กรุณาใส่ปี ค.ศ. (' . $yearText . ' = ค.ศ. ' . ((int)$yearText - 543) . ')';
     } elseif ((int)$yearText < 1900 || (int)$yearText > 2100) {
         $yearError = 'ปีต้องอยู่ระหว่าง 1900 - 2100';
     }

@@ -65,7 +65,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $error === null) {
             if ($isEdit) {
                 sales_repo()->update($id, $v['saleDate'], $v['kg'], $v['unitPrice']);
                 $savedId = $id;
-                flash('success', 'แก้ไขข้อมูลเรียบร้อยแล้ว');
+                flash('success', 'แก้ไขรายการขายแล้ว');
             } else {
                 $savedId = sales_repo()->create($v['saleDate'], $v['kg'], $v['unitPrice']);
                 if (!empty($_POST['next'])) {
@@ -74,7 +74,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $error === null) {
                         . fmt_money($v['kg'] * $v['unitPrice']) . ' — เพิ่มรายการถัดไปได้เลย');
                     redirect(url('sale_form.php', array('date' => $v['saleDate'])));
                 }
-                flash('success', 'บันทึกข้อมูลเรียบร้อยแล้ว');
+                flash('success', 'บันทึกรายการขายแล้ว');
             }
             // Land on the season the sale actually counts toward, not the one last viewed
             $saved = sales_repo()->find($savedId);
@@ -92,7 +92,7 @@ foreach ($seasons as $s) {
 }
 usort($ranges, function ($a, $b) { return strcmp($a['start'], $b['start']); });
 
-$pageTitle = $isEdit ? 'แก้ไขยอดขาย' : 'เพิ่มยอดขาย';
+$pageTitle = $isEdit ? 'แก้ไขรายการขาย' : 'เพิ่มรายการขาย';
 $backUrl = sales_list_url();
 require APP_DIR . '/views/header.php';
 ?>
