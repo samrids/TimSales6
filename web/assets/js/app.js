@@ -20,6 +20,18 @@
     var row = el.parentNode.parentNode;
     row.scrollLeft = el.offsetLeft - (row.clientWidth - el.offsetWidth) / 2;
   });
+  // ...and fade whichever edge has more seasons hidden behind it
+  each('.season-tabs ul', function (row) {
+    function update() {
+      var max = row.scrollWidth - row.clientWidth;
+      row.classList.toggle('has-more-left', row.scrollLeft > 2);
+      row.classList.toggle('has-more-right', row.scrollLeft < max - 2);
+    }
+    row.addEventListener('scroll', update, { passive: true });
+    window.addEventListener('resize', update);
+    if (document.fonts && document.fonts.ready) { document.fonts.ready.then(update); }
+    update();
+  });
 
   // "ใช้ราคาล่าสุด": fill the price only when the user taps it
   each('[data-fill-price]', function (btn) {
